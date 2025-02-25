@@ -6,10 +6,13 @@ using UnityEngine.InputSystem.Controls;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10f;
+    [SerializeField] float angularSpeed = 5f;
 
     Camera mainCam;
     Rigidbody rb;
     List<Orb> activeOrbs = new List<Orb>();
+    Dictionary<HashSet<Orb>, Skill> skillBook;
+    
 
     Vector3 targetPoint = new Vector3();
 
@@ -26,6 +29,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         HandleOrbSelection();
+        HandleSkillCrafting();
     }
 
     private void FixedUpdate()
@@ -51,11 +55,17 @@ public class PlayerController : MonoBehaviour
             }
 
             targetPoint.y = transform.position.y;
-            Debug.Log($"Target point: {targetPoint}");
             float delta = moveSpeed * Time.deltaTime;
+            float angularDelta = angularSpeed * Time.deltaTime;
             Vector3 direction = (targetPoint - rb.position).normalized;
             Vector3 newPos = rb.position + direction * delta;
+            Vector3 newOrientation = Vector3.RotateTowards(rb.position, targetPoint, angularDelta, 0f);
+            newOrientation.x = 0;
+            newOrientation.z = 0;
+            Quaternion QuaternionNewOrientation = Quaternion.Euler(newOrientation);
+
             rb.MovePosition(newPos);
+            rb.MoveRotation(QuaternionNewOrientation);
         }
     }
 
@@ -76,5 +86,24 @@ public class PlayerController : MonoBehaviour
         activeOrbs.Add(orb);
 
         Debug.Log($"Current orbs: {string.Join(", ", activeOrbs)}");
+    }
+
+    Skill HandleSkillCrafting()
+    {   
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            HashSet<Orb> orbSet = new HashSet<Orb>(activeOrbs);
+
+            Debug.Log(string.Join(", ", orbSet));
+
+            skillBook = SkillBook.GetSkills();
+
+            if (skillBook.TryGetValue(orbSet, out Skill skill))
+            {
+                Debug.Log($"Crafted Skill: {skill.skillName}");
+                return skill;
+            }
+        }
+        return null;
     }
 }
