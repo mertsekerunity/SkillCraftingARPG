@@ -60,6 +60,6 @@ public class PlayerController : MonoBehaviour
 
         activeOrbs.Add(orb);
 
-        Debug.Log($"Current orbs: {activeOrbs}");
+        Debug.Log($"Current orbs: {string.Join(", ", activeOrbs)}");
     }
 }
