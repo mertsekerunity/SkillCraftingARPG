@@ -7,22 +7,31 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10f;
     [SerializeField] float angularSpeed = 5f;
+    [SerializeField] float craftingMaxCooldown = 0.4f;
 
+    PlayerMana playerMana;
     Camera mainCam;
     Rigidbody rb;
+    Skill skill;
+    Skill craftSkill;
+
+
     List<Orb> activeOrbs = new List<Orb>();
     Dictionary<HashSet<Orb>, Skill> skillBook;
 
     Vector3 targetPoint = new Vector3();
 
     int maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length;
+    float craftingCooldown;
 
     // Start is called before the first frame update
     void Start()
     {
         mainCam = Camera.main;
         rb = GetComponent<Rigidbody>();
+        playerMana = GetComponent<PlayerMana>();
         skillBook = SkillBook.GetSkills();
+        craftSkill = new Skill("Craft", craftingMaxCooldown, 0);
     }
 
     // Update is called once per frame
@@ -30,6 +39,7 @@ public class PlayerController : MonoBehaviour
     {
         HandleOrbSelection();
         HandleSkillCrafting();
+        HandleSkillExecution();
     }
 
     private void FixedUpdate()
@@ -88,23 +98,52 @@ public class PlayerController : MonoBehaviour
         Debug.Log($"Current orbs: {string.Join(", ", activeOrbs)}");
     }
 
-    Skill HandleSkillCrafting()
-    {   
-        if (Input.GetKeyDown(KeyCode.R))
+    void HandleSkillCrafting()
+    {
+        if (activeOrbs.Count != maxOrbsCount) return;
+
+        if(craftSkill.skillCooldown > 0)
+        {
+            craftSkill.skillCooldown -= Time.deltaTime;
+        }
+
+        if (Input.GetKeyDown(KeyCode.R) && craftSkill.skillCooldown <= 0)
         {
             HashSet<Orb> orbSet = new HashSet<Orb>(activeOrbs);
 
             Debug.Log(string.Join(", ", orbSet));
 
-            
-
             if (skillBook.TryGetValue(orbSet, out Skill skill))
             {
-                Debug.Log($"Crafted Skill: {skill.skillName}");
-                orbSet.Clear();
-                return skill;
+                if(this.skill != skill)
+                {
+                    Debug.Log($"Crafted Skill: {skill.skillName}");
+                    orbSet.Clear(); //not necessary imo?
+                    this.skill = skill;
+                    craftSkill.skillCooldown = craftSkill.skillMaxCooldown;
+                }
             }
         }
-        return null;
+    }
+
+    void HandleSkillExecution()
+    {
+        if (skill == null) return;
+
+        if(skill.skillCooldown > 0)
+        {
+            skill.skillCooldown -= Time.deltaTime;
+        }
+        Debug.Log($"Remaining cooldown to use {skill.skillName}: {skill.skillCooldown} secs");
+
+        if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana.mana >= skill.requiredMana)
+        {
+            Debug.Log($"{skill.skillName} is used.");
+
+            playerMana.ModifyMana(skill);
+            Debug.Log($" {playerMana.mana} MP left.");
+
+            skill.skillCooldown = skill.skillMaxCooldown;
+        }
     }
 }
