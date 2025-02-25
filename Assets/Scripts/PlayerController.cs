@@ -12,7 +12,6 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     List<Orb> activeOrbs = new List<Orb>();
     Dictionary<HashSet<Orb>, Skill> skillBook;
-    
 
     Vector3 targetPoint = new Vector3();
 
@@ -23,6 +22,7 @@ public class PlayerController : MonoBehaviour
     {
         mainCam = Camera.main;
         rb = GetComponent<Rigidbody>();
+        skillBook = SkillBook.GetSkills();
     }
 
     // Update is called once per frame
@@ -96,11 +96,12 @@ public class PlayerController : MonoBehaviour
 
             Debug.Log(string.Join(", ", orbSet));
 
-            skillBook = SkillBook.GetSkills();
+            
 
             if (skillBook.TryGetValue(orbSet, out Skill skill))
             {
                 Debug.Log($"Crafted Skill: {skill.skillName}");
+                orbSet.Clear();
                 return skill;
             }
         }
