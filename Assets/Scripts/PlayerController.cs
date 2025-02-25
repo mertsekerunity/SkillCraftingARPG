@@ -7,40 +7,55 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10f;
 
-    Camera myCamera;
+    Camera mainCam;
+    Rigidbody rb;
     List<Orb> activeOrbs = new List<Orb>();
 
-    int maxOrbsCount = 2; // any other way to get access to number of the elements inside enum??
+    Vector3 targetPoint = new Vector3();
+
+    int maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length;
 
     // Start is called before the first frame update
     void Start()
     {
-        myCamera = Camera.main;
+        mainCam = Camera.main;
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        HandleMovement();
         HandleOrbSelection();
+    }
+
+    private void FixedUpdate()
+    {
+        HandleMovement();
     }
 
     void HandleMovement()
     {
-        //float xValue = Input.GetAxis("Horizontal") * Time.deltaTime * moveSpeed;
-        //float zValue = Input.GetAxis("Vertical") * Time.deltaTime * moveSpeed;
-        //transform.Translate(xValue, 0, zValue);
-
         if (Input.GetMouseButton(0))
         {
             Vector3 mousePos = Input.mousePosition;
-            Vector3 targetPoint = myCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, myCamera.nearClipPlane));
-            //Vector3 targetPoint = myCamera.ScreenToWorldPoint(mousePos);
-            //targetPoint.z = targetPoint.y;
-            //targetPoint.y = transform.position.y;
+            Ray ray = mainCam.ScreenPointToRay(mousePos);
+            RaycastHit hit;
+
+            if(Physics.Raycast(ray.origin, ray.direction, out hit))
+            {
+                targetPoint = hit.point;
+            }
+            else
+            {
+                return;
+            }
+
+            targetPoint.y = transform.position.y;
             Debug.Log($"Target point: {targetPoint}");
             float delta = moveSpeed * Time.deltaTime;
-            transform.position = Vector3.MoveTowards(transform.position, targetPoint, delta);
+            Vector3 direction = (targetPoint - rb.position).normalized;
+            Vector3 newPos = rb.position + direction * delta;
+            rb.MovePosition(newPos);
         }
     }
 
