@@ -1,6 +1,6 @@
 using UnityEditor.Experimental.GraphView;
 
-public enum Element
+public enum Orb
 {
     Quas,
     Wex,
