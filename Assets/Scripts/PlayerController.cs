@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
     float craftingCooldown;
     float currentSkillCooldown = 0f; // Track cooldown separately
 
+    private PlayerStates currentState = PlayerStates.Idle; // Track player's current state
+
     void Start()
     {
         mainCam = Camera.main;
@@ -39,6 +41,7 @@ public class PlayerController : MonoBehaviour
         HandleOrbSelection();
         HandleSkillCrafting();
         HandleSkillExecution();
+        UpdateAnimationState(); // Ensure animations update according to state
     }
 
     void FixedUpdate()
@@ -84,8 +87,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // Update animation state
-        animator.SetBool("isWalking", isMoving);
+        // Set player state based on movement
+        currentState = isMoving ? PlayerStates.Walking : PlayerStates.Idle;
     }
 
     void HandleOrbSelection()
@@ -147,6 +150,22 @@ public class PlayerController : MonoBehaviour
             Debug.Log($"{playerMana.mana} MP left.");
 
             currentSkillCooldown = currentSkill.cooldown;
+
+            // Set player state to UsingSkill
+            currentState = PlayerStates.UsingSkill;
+            Invoke(nameof(ResetState), 0.5f); // Reset to Idle after a short delay
         }
+    }
+
+    void UpdateAnimationState()
+    {
+        animator.SetBool("isWalking", currentState == PlayerStates.Walking);
+        animator.SetBool("isAttacking", currentState == PlayerStates.Attacking);
+        animator.SetBool("isUsingSkill", currentState == PlayerStates.UsingSkill);
+    }
+
+    void ResetState()
+    {
+        currentState = PlayerStates.Idle;
     }
 }
