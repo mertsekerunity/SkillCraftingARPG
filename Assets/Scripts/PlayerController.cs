@@ -82,13 +82,13 @@ public class PlayerController : MonoBehaviour
             direction = (targetPoint - rb.position).normalized;
             lastWalkingDirection = direction.x;
             Vector3 newPos = rb.position + direction * delta;
-            Vector3 newOrientation = Vector3.RotateTowards(rb.position, targetPoint, angularDelta, 0f);
-            newOrientation.x = 0;
-            newOrientation.z = 0;
-            Quaternion QuaternionNewOrientation = Quaternion.Euler(newOrientation);
+            //Vector3 newOrientation = Vector3.RotateTowards(rb.position, targetPoint, angularDelta, 0f);
+            //newOrientation.x = 0;
+            //newOrientation.z = 0;
+            //Quaternion QuaternionNewOrientation = Quaternion.Euler(newOrientation);
 
             rb.MovePosition(newPos);
-            rb.MoveRotation(QuaternionNewOrientation);
+            //rb.MoveRotation(QuaternionNewOrientation); //game is 3D but player has 2D sprite so it is not useful
         }
         else
         {
@@ -155,13 +155,8 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana.mana >= skill.requiredMana)
         {
+            playerState = PlayerState.UsingSkill;
             Debug.Log($"{skill.skillName} is used.");
-
-            //animator.SetBool("SpecialAbility1North", true);
-            //animator.SetBool("isSpecialAbility1", true);
-
-            animator.SetBool("CastSpellEast", true);
-            animator.SetBool("isCastingSpell", true);
 
             playerMana.ModifyMana(skill);
             Debug.Log($" {playerMana.mana} MP left.");
@@ -175,7 +170,9 @@ public class PlayerController : MonoBehaviour
         switch (playerState)
         {
             case PlayerState.Idle:
-                if(lastWalkingDirection < 0)
+                animator.SetBool("isWalking", false); // play idle animation
+
+                if (lastWalkingDirection < 0)
                 {
                     spriteRenderer.flipX = true;
                 }
@@ -183,10 +180,12 @@ public class PlayerController : MonoBehaviour
                 {
                     spriteRenderer.flipX = false;
                 }
-                // play idle animation
+                
                 break;
             case PlayerState.Walking:
-                if(direction.x < 0)
+                animator.SetBool("isWalking", true); // play walking animation
+
+                if (direction.x < 0)
                 {
                     spriteRenderer.flipX = true;
                 }
@@ -194,16 +193,29 @@ public class PlayerController : MonoBehaviour
                 {
                     spriteRenderer.flipX = false;
                 }
-                // play walking animation
+                
                 break;
             case PlayerState.Attacking:
-                //play attack animation
+                animator.SetTrigger("Attack"); //play attack animation
+
                 break;
             case PlayerState.UsingSkill:
-                //play skill animations
+
+                switch (skill.skillName)
+                {
+                    case "Skill 1":
+                        animator.SetTrigger("Skill 1"); //play skill 1 animation
+                        break;
+                    case "Skill 2":
+                        animator.SetTrigger("Skill 2"); //play skill 2 animation
+                        break;
+                    case "Skill 3":
+                        animator.SetTrigger("Skill 3"); //play skill 3 animation
+                        break;
+                }
                 break;
             default:
-                // play idle animation
+                // add hard reset for all animations, not only for walking and after force idle 
                 break;
         }
     }
