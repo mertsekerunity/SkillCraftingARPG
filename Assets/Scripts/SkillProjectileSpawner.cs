@@ -2,9 +2,7 @@ using UnityEngine;
 
 public class SkillProjectileSpawner : MonoBehaviour
 {
-    [SerializeField] GameObject fireballPrefab;
-    [SerializeField] float projectileSpeed = 10f;
-    [SerializeField] Vector3 spawnOffset = new Vector3(0, 1, 0); // Offset relatively from the player position
+    [SerializeField] Vector3 spawnOffset = new Vector3(0, 1, 0);
 
     private Camera mainCamera;
 
@@ -13,63 +11,68 @@ public class SkillProjectileSpawner : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    public void SpawnProjectileForSkill(Skill skill)
+    public void SpawnProjectileForSkill(SkillData skillData)
     {
-        // Get mouse position in world space
+        if (skillData == null)
+        {
+            Debug.LogError("Null skillData passed to SpawnProjectileForSkill");
+            return;
+        }
+
+        if (skillData.projectilePrefab == null)
+        {
+            Debug.LogError($"No projectile prefab specified for skill: {skillData.skillName}");
+            return;
+        }
+
+        // Get target point from mouse position
         Vector3 mousePos = Input.mousePosition;
         Ray ray = mainCamera.ScreenPointToRay(mousePos);
-        RaycastHit hit;
         Vector3 targetPoint;
 
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out RaycastHit hit))
         {
             targetPoint = hit.point;
         }
         else
         {
-            // If raycast doesn't hit anything, project to a far distance
-            targetPoint = ray.origin + ray.direction * 100f;
+            targetPoint = ray.origin + ray.direction * skillData.range;
         }
 
-        // Calculate direction from player to target point
-        Vector3 playerPos = transform.position;
-        Vector3 direction = (targetPoint - playerPos).normalized;
-
-        // Calculate spawn position (slightly offset from player if needed)
+        // Calculate direction and spawn position
+        Vector3 direction = (targetPoint - transform.position).normalized;
         Vector3 spawnPosition = transform.position + spawnOffset;
-
-        // Create rotation that looks in the direction of the target
         Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-        // Instantiate fireball at player's position with the proper rotation
-        GameObject fireball = Instantiate(fireballPrefab, spawnPosition, targetRotation);
+        // Instantiate projectile
+        GameObject projectileObj = Instantiate(skillData.projectilePrefab, spawnPosition, targetRotation);
 
-        // Set the damage value directly from the skill
-        SkillProjectile projectile = fireball.GetComponent<SkillProjectile>();
-        if (projectile != null)
+        // Configure the projectile using SkillData properties
+        if (projectileObj.TryGetComponent<SkillProjectile>(out var projectile))
         {
-            projectile.damage = skill.skillDamage;
-            projectile.speed = projectileSpeed;
+            projectile.damage = skillData.damage;
+            projectile.speed = skillData.projectileSpeed;
+            projectile.lifetime = skillData.projectileLifetime;
+
+            Debug.Log($"Spawned {skillData.skillName} projectile: damage={skillData.damage}");
         }
         else
         {
-            Debug.LogError("SkillProjectile component missing from fireball prefab!");
+            Debug.LogError($"SkillProjectile component missing from prefab for skill: {skillData.skillName}");
+            Destroy(projectileObj);
+            return;
         }
 
-        // Get the Rigidbody component of the fireball
-        Rigidbody fireballRb = fireball.GetComponent<Rigidbody>();
-        if (fireballRb != null)
+        // Configure physics
+        if (projectileObj.TryGetComponent<Rigidbody>(out var projectileRb))
         {
-            // Set velocity in the calculated direction
-            fireballRb.velocity = direction * projectileSpeed;
-
-            // Ensure no gravity for a straight path
-            fireballRb.useGravity = false;
-
-            // Freeze rotation to prevent the projectile from spinning
-            fireballRb.constraints = RigidbodyConstraints.FreezeRotation;
+            projectileRb.velocity = direction * skillData.projectileSpeed;
+            projectileRb.useGravity = false;
+            projectileRb.constraints = RigidbodyConstraints.FreezeRotation;
         }
-
-        Debug.Log($"Fireball instantiated for {skill.skillName} with damage: {skill.skillDamage}, Direction: {direction}");
+        else
+        {
+            Debug.LogWarning($"No Rigidbody on projectile for skill: {skillData.skillName}");
+        }
     }
 }

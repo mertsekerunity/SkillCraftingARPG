@@ -1,19 +1,30 @@
 using System.Collections.Generic;
+using UnityEngine;
 
-public static class SkillBook
+[CreateAssetMenu(fileName = "SkillBook", menuName = "Skills/SkillBook")]
+public class SkillBook : ScriptableObject
 {
-    static Dictionary<HashSet<Orb>, Skill> skillBook = new Dictionary<HashSet<Orb>, Skill>(HashSet<Orb>.CreateSetComparer());
-
-    static void CreateSkills()
+    // previous approach used a static dictionary, meaning all skill data was loaded into memory at runtime whether or not it was needed.
+    // But with ScriptableObjects, skills are loaded and referenced only when needed, reducing RAM consumption
+    [System.Serializable]
+    public struct SkillEntry
     {
-        skillBook.Add(new HashSet<Orb> { Orb.Quas, Orb.Quas}, new Skill("Skill 1", 0.1f, 30, 1000f, 10f));
-        skillBook.Add(new HashSet<Orb> {Orb.Wex, Orb.Wex }, new Skill("Skill 2", 10f, 20, 1000f, 70f));
-        skillBook.Add(new HashSet<Orb> {Orb.Quas, Orb.Wex }, new Skill("Skill 3", 3f, 8, 600f, 20f));
+        public List<Orb> combination;
+        public SkillData skill;
     }
 
-    public static Dictionary<HashSet<Orb>, Skill> GetSkills()
+    // predefined list of skills always more efficient than a dictionary lookup with HashSet comparisons
+    public List<SkillEntry> skillEntries = new List<SkillEntry>();
+
+    public SkillData GetSkill(List<Orb> orbs)
     {
-        CreateSkills();
-        return skillBook;
+        foreach (var entry in skillEntries)
+        {
+            if (new HashSet<Orb>(entry.combination).SetEquals(orbs))
+            {
+                return entry.skill;
+            }
+        }
+        return null;
     }
-}   
+}

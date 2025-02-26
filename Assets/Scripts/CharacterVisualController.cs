@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// this script is basically a brdige between the (parent and child game objects, specifically, between PlayerController and the SkillProjectileSpawner)
+// This script bridges the parent and child game objects, specifically between PlayerController and animations
 public class CharacterVisualController : MonoBehaviour
 {
     private PlayerController playerController;
@@ -24,11 +24,22 @@ public class CharacterVisualController : MonoBehaviour
         }
     }
 
+    // Called from animation events
     public void OnFireballAnimationEvent()
     {
         if (playerController != null && playerController.currentActiveSkill != null && projectileSpawner != null)
         {
-            projectileSpawner.SpawnProjectileForSkill(playerController.currentActiveSkill);
+            // Forward to player's skill handling method
+            playerController.OnSkillAnimationEvent();
+        }
+    }
+
+    // Called at the end of attack/skill animations
+    public void OnAnimationComplete()
+    {
+        if (playerController != null)
+        {
+            playerController.ResetState();
         }
     }
 }

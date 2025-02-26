@@ -1,12 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SkillProjectile : MonoBehaviour
 {
-    public float damage;
-    public float speed = 10f;
-    public float lifetime = 5f;
+    // These will be set by the spawner based on SkillData
+    [HideInInspector] public float damage;
+    [HideInInspector] public float speed;
+    [HideInInspector] public float lifetime;
 
     private void Start()
     {
@@ -17,11 +16,11 @@ public class SkillProjectile : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // Check if we hit an enemy
-        EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
-        if (enemyHealth != null)
+        if (other.TryGetComponent<EnemyHealth>(out var enemyHealth))
         {
             // Apply damage
             enemyHealth.TakeDamage(damage);
+            Debug.Log($"Projectile hit for {damage} damage");
 
             // Destroy the projectile after hitting
             Destroy(gameObject);

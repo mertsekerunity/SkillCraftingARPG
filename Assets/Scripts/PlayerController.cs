@@ -1,106 +1,124 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.Playables;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10f;
     [SerializeField] float craftingMaxCooldown = 0.4f;
+
+    [SerializeField] SkillBook skillBookData; // Reference to the SkillBook ScriptableObject
     [SerializeField] float attackDamage = 25f;
     [SerializeField] float attackRange = 20f;
 
-    [HideInInspector] public Skill currentActiveSkill = null;
-    [HideInInspector] public Vector3 direction;
+    // Currently active skill data
+    private SkillData currentSkill;
+    [HideInInspector] public SkillData currentActiveSkill = null;
+    private float craftingCooldown;
+    private float currentSkillCooldown = 0f;
 
-    PlayerMana playerMana;
-    Camera mainCam;
-    Rigidbody rb;
-    Skill skill;
-    Skill craftSkill;
-    Animator animator;
-    SpriteRenderer spriteRenderer;
+    // Component references
+    private PlayerMana playerMana;
+    private Camera mainCam;
+    private Rigidbody rb;
+    private Animator animator;
+    private SpriteRenderer spriteRenderer;
+    private SkillProjectileSpawner projectileSpawner;
 
+    // State tracking
+    private PlayerStates currentState = PlayerStates.Idle;
+    private Vector3 targetPoint = Vector3.zero;
+    private Vector3 direction;
+    private float lastWalkingDirection;
 
-    PlayerState playerState = PlayerState.Idle;
-    PlayerState previousState = PlayerState.Idle;
+    // Orb system
+    private List<Orb> activeOrbs = new List<Orb>();
+    private int maxOrbsCount;
 
-
-    List<Orb> activeOrbs = new List<Orb>();
-    Dictionary<HashSet<Orb>, Skill> skillBook;
-
-    float lastWalkingDirection;
-    float lastAttackingDirection;
-    float lastUsingSkillDirection;
-
-    int maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length;
-
-    // Start is called before the first frame update
     void Start()
     {
+        // Get component references
         mainCam = Camera.main;
         rb = GetComponent<Rigidbody>();
         playerMana = GetComponent<PlayerMana>();
-        skillBook = SkillBook.GetSkills();
+
+        // Get components from children if needed
         animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        projectileSpawner = GetComponentInChildren<SkillProjectileSpawner>();
 
-        craftSkill = new Skill("Craft", craftingMaxCooldown, 0, 0, 0);
+        // Initialize orb system
+        maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length;
+
+        if (projectileSpawner == null)
+        {
+            Debug.LogError("SkillProjectileSpawner component not found in player or its children!");
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
         HandleOrbSelection();
         HandleSkillCrafting();
         HandleSkillExecution();
         HandleAttackExecution();
-        HandleStates();
+        UpdateAnimationState();
 
-        if (playerState != previousState)
+        // Handle cooldowns
+        if (craftingCooldown > 0)
         {
-            previousState = playerState;
-            Debug.Log($"player state changed to: {playerState}");
+            craftingCooldown -= Time.deltaTime;
         }
 
+        if (currentSkillCooldown > 0)
+        {
+            currentSkillCooldown -= Time.deltaTime;
+        }
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         HandleMovement();
     }
 
     void HandleMovement()
     {
-        if (Input.GetMouseButton(0))
+        bool isMoving = false;
+
+        if (Input.GetMouseButton(0)) // Left mouse button for movement
         {
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
-            RaycastHit hit;
 
-            if (Physics.Raycast(ray.origin, ray.direction, out hit))
+            if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                playerState = PlayerState.Walking;
-
-                Vector3 targetPoint = hit.point;
+                targetPoint = hit.point;
+                targetPoint.y = transform.position.y; // Keep on the same Y plane
                 direction = (targetPoint - rb.position).normalized;
-                targetPoint.y = transform.position.y;
-                float delta = moveSpeed * Time.deltaTime;
-                lastWalkingDirection = direction.x;
-                Vector3 newPos = rb.position + direction * delta;
 
-                rb.MovePosition(newPos);
-            }
-            else
-            {
-                playerState = PlayerState.Idle;
-                return;
+                if (direction.magnitude > 0.1f) // Prevent micro-movements
+                {
+                    isMoving = true;
+                    lastWalkingDirection = direction.x;
+
+                    float delta = moveSpeed * Time.deltaTime;
+                    Vector3 newPos = rb.position + direction * delta;
+                    rb.MovePosition(newPos);
+
+                    // Flip sprite based on movement direction
+                    spriteRenderer.flipX = direction.x < 0;
+                }
             }
         }
-        else
+
+        // Update state based on movement
+        if (isMoving && currentState != PlayerStates.Attacking && currentState != PlayerStates.UsingSkill)
         {
-            playerState = PlayerState.Idle;
+            currentState = PlayerStates.Walking;
+        }
+        else if (!isMoving && currentState != PlayerStates.Attacking && currentState != PlayerStates.UsingSkill)
+        {
+            currentState = PlayerStates.Idle;
         }
     }
 
@@ -108,109 +126,89 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Q)) AddOrb(Orb.Quas);
         if (Input.GetKeyDown(KeyCode.W)) AddOrb(Orb.Wex);
-        //if (Input.GetKeyDown(KeyCode.E)) AddOrb(Orb.Exort);
+        // Future expansion: if (Input.GetKeyDown(KeyCode.E)) AddOrb(Orb.Exort);
     }
 
     void AddOrb(Orb orb)
     {
         if (activeOrbs.Count >= maxOrbsCount)
         {
-            activeOrbs.RemoveAt(0);
+            activeOrbs.RemoveAt(0); // Remove oldest orb
         }
 
         activeOrbs.Add(orb);
-
-        Debug.Log($"Current casted orbs: {string.Join(", ", activeOrbs)}");
+        Debug.Log($"Current orbs: {string.Join(", ", activeOrbs)}");
     }
 
     void HandleSkillCrafting()
     {
         if (activeOrbs.Count != maxOrbsCount) return;
 
-        if (craftSkill.skillCooldown > 0)
+        if (Input.GetKeyDown(KeyCode.R) && craftingCooldown <= 0)
         {
-            craftSkill.skillCooldown -= Time.deltaTime;
-        }
+            SkillData newSkill = skillBookData.GetSkill(activeOrbs);
 
-        if (Input.GetKeyDown(KeyCode.R) && craftSkill.skillCooldown <= 0)
-        {
-            HashSet<Orb> orbSet = new HashSet<Orb>(activeOrbs);
-
-            //Debug.Log(string.Join(", ", orbSet));
-
-            if (skillBook.TryGetValue(orbSet, out Skill skill))
+            if (newSkill != null && (currentSkill == null || currentSkill.skillName != newSkill.skillName))
             {
-                if (this.skill != skill)
-                {
-                    Debug.Log($"Crafted Skill: {skill.skillName}");
-                    orbSet.Clear();
-                    this.skill = skill;
-                    craftSkill.skillCooldown = craftSkill.skillMaxCooldown;
-                }
+                Debug.Log($"Crafted Skill: {newSkill.skillName}");
+                currentSkill = newSkill;
+                craftingCooldown = craftingMaxCooldown;
             }
         }
     }
 
     void HandleSkillExecution()
     {
-        if (skill == null)
-        {
-            return;
-        }
+        if (currentSkill == null) return;
 
-        if (skill.skillCooldown > 0)
+        if (Input.GetKeyDown(KeyCode.D) && currentSkillCooldown <= 0 && playerMana.mana >= currentSkill.manaCost)
         {
-            skill.skillCooldown -= Time.deltaTime;
-        }
+            Debug.Log($"{currentSkill.skillName} is being used.");
 
-        if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana != null && playerMana.mana >= skill.requiredMana)
-        {
-            playerState = PlayerState.UsingSkill;
-            currentActiveSkill = skill; // Store the skill reference
+            // Store the active skill for the animation event
+            currentActiveSkill = currentSkill;
 
-            // Direction calculation for animation
+            // Compute direction for animation
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
-            RaycastHit hit;
-            Vector3 targetPoint;
 
-            if (Physics.Raycast(ray.origin, ray.direction, out hit))
+            if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                targetPoint = hit.point;
+                direction = (hit.point - transform.position).normalized;
             }
             else
             {
-                targetPoint = ray.origin + ray.direction * skill.skillRange;
+                direction = ray.direction;
             }
 
-            Vector3 direction = (targetPoint - transform.position).normalized;
-            lastUsingSkillDirection = direction.x;
+            // Flip sprite based on skill cast direction
+            spriteRenderer.flipX = direction.x < 0;
 
             // Handle mana consumption
-            if (playerMana != null)
-            {
-                playerMana.ModifyMana(skill);
-                Debug.Log($" {playerMana.mana} MP left.");
-            }
-            else
-            {
-                Debug.LogError("PlayerMana is null!");
-            }
+            playerMana.ModifyMana(currentSkill);
+            Debug.Log($"{playerMana.mana} MP left.");
 
-            // Start cooldown
-            skill.skillCooldown = skill.skillMaxCooldown;
+            // Set cooldown
+            currentSkillCooldown = currentSkill.cooldown;
+
+            // Set state
+            currentState = PlayerStates.UsingSkill;
+
+            // Trigger animation based on skill name or animation trigger
+            string animTrigger = currentSkill.GetAnimationTrigger();
+            animator.SetTrigger(animTrigger);
         }
-        else if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown <= 0) && playerMana.mana >= skill.requiredMana)
+        else if (Input.GetKeyDown(KeyCode.D) && currentSkillCooldown > 0)
         {
-            Debug.Log($"Remaining cooldown to use {skill.skillName}: {skill.skillCooldown} secs");
+            Debug.Log($"Remaining cooldown for {currentSkill.skillName}: {currentSkillCooldown} secs");
         }
-        else if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana.mana < skill.requiredMana)
+        else if (Input.GetKeyDown(KeyCode.D) && playerMana.mana < currentSkill.manaCost)
         {
             Debug.Log("Not enough mana!");
         }
     }
 
-    public void OnFireballAnimationEvent()
+    public void OnSkillAnimationEvent()
     {
         if (currentActiveSkill == null)
         {
@@ -218,114 +216,56 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // Get reference to the projectile spawner (with built-in null check)
-        if (TryGetComponent<SkillProjectileSpawner>(out var projectileSpawner))
+        if (projectileSpawner != null)
         {
-            // Spawn projectile with direct reference to skill
             projectileSpawner.SpawnProjectileForSkill(currentActiveSkill);
         }
         else
         {
-            Debug.LogError("SkillProjectileSpawner component missing from player!");
+            Debug.LogError("ProjectileSpawner is null when trying to spawn projectile!");
         }
     }
 
-    void HandleAttackExecution()  //attack cooldownu yok o yüzden tekrar attack edince bozuyor, onun icin bir mekanizma ekle!! GetMouseButtonDown?
+    void HandleAttackExecution()
     {
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1)) // Right mouse button for attacks
         {
-            playerState = PlayerState.Attacking;
-
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
-            RaycastHit hit;
-            LayerMask layerMask = LayerMask.GetMask("Enemy");
+            LayerMask enemyLayer = LayerMask.GetMask("Enemy");
 
-            if (Physics.Raycast(ray.origin, ray.direction, out hit, attackRange, layerMask))
+            if (Physics.Raycast(ray, out RaycastHit hit, attackRange, enemyLayer))
             {
-                EnemyHealth target = hit.transform.GetComponent<EnemyHealth>();
-                direction = (target.transform.position - rb.position).normalized;
-                lastAttackingDirection = direction.x;
-
-                if (target != null)
+                
+                if (hit.transform.TryGetComponent<EnemyHealth>(out var target))
                 {
-                    float dist = Vector3.Distance(target.transform.position, transform.position);
+                    direction = (target.transform.position - transform.position).normalized;
+                    spriteRenderer.flipX = direction.x < 0;
+
+                    // Apply damage
                     target.TakeDamage(attackDamage);
+
+                    // Set state and trigger animation
+                    currentState = PlayerStates.Attacking;
+                    animator.SetTrigger("Attack");
                 }
-                else return;
             }
         }
     }
 
-    void HandleStates()
+    void UpdateAnimationState()
     {
-        switch (playerState)
+        animator.SetBool("isWalking", currentState == PlayerStates.Walking);
+    }
+
+    // Called from animation events or after skill/attack completes
+    public void ResetState()
+    {
+        // Only reset if we're in an action state, don't interrupt walking
+        if (currentState == PlayerStates.Attacking || currentState == PlayerStates.UsingSkill)
         {
-            case PlayerState.Idle:
-                if (lastWalkingDirection < 0.02f)
-                {
-                    spriteRenderer.flipX = true;
-                }
-                else
-                {
-                    spriteRenderer.flipX = false;
-                }
-
-                animator.SetBool("isWalking", false); // play idle animation
-
-                break;
-            case PlayerState.Walking:
-                if (direction.x < 0.02f)
-                {
-                    spriteRenderer.flipX = true;
-                }
-                else
-                {
-                    spriteRenderer.flipX = false;
-                }
-
-                animator.SetBool("isWalking", true); // play walking animation
-
-                break;
-            case PlayerState.Attacking:
-                if (direction.x < 0.02f)
-                {
-                    spriteRenderer.flipX = true;
-                }
-                else
-                {
-                    spriteRenderer.flipX = false;
-                }
-
-                animator.SetTrigger("Attack"); //play attack animation
-
-                break;
-            case PlayerState.UsingSkill:
-                if (direction.x < 0.02f)
-                {
-                    spriteRenderer.flipX = true;
-                }
-                else
-                {
-                    spriteRenderer.flipX = false;
-                }
-
-                switch (skill.skillName)
-                {
-                    case "Skill 1":
-                        animator.SetTrigger("Skill 1"); //play skill 1 animation
-                        break;
-                    case "Skill 2":
-                        animator.SetTrigger("Skill 2"); //play skill 2 animation
-                        break;
-                    case "Skill 3":
-                        animator.SetTrigger("Skill 3"); //play skill 3 animation
-                        break;
-                }
-                break;
-            default:
-                // add hard reset for all animations, not only for walking and after force idle 
-                break;
+            currentState = PlayerStates.Idle;
+            currentActiveSkill = null;
         }
     }
 }

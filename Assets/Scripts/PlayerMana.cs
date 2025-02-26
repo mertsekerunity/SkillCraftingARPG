@@ -5,33 +5,27 @@ using UnityEngine;
 public class PlayerMana : MonoBehaviour
 {
     [SerializeField] int maxMana = 100;
-    [SerializeField] float manaRegen = 1.5f; //per second
+    [SerializeField] float manaRegen = 1.5f; // per second
 
     public float mana;
 
-    //public int Mana { get; private set; }
-
-    // Start is called before the first frame update
     void Start()
     {
         mana = maxMana;
     }
 
-    // Update is called once per frame
     void Update()
     {
         mana += manaRegen * Time.deltaTime;
         mana = Mathf.Clamp(mana, 0, maxMana);
     }
 
-    public void ModifyMana(Skill skill)
+    // Support both SkillData and Skill objects for flexibility
+    public void ModifyMana(SkillData skillData)
     {
-        if (skill != null)
+        if (skillData != null && mana >= skillData.manaCost)
         {
-            if (mana >= skill.requiredMana)
-            {
-                mana -= skill.requiredMana;
-            }
+            mana -= skillData.manaCost;
         }
     }
 }

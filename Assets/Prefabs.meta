@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Prefabs.meta
 guid: 51fed0594bcb18e4f9489e16cfad4c24
+========
+guid: 34008867e6d2c124e8654a22927f7f75
+>>>>>>>> 78fe82c (Added states):Assets/Scriptable Objects.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
