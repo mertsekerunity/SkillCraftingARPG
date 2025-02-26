@@ -90,8 +90,10 @@ public class PlayerController : MonoBehaviour
             rb.MovePosition(newPos);
             rb.MoveRotation(QuaternionNewOrientation);
         }
-
-        playerState = PlayerState.Idle;
+        else
+        {
+            playerState = PlayerState.Idle;
+        }
     }
 
     void HandleOrbSelection()
@@ -184,7 +186,7 @@ public class PlayerController : MonoBehaviour
                 // play idle animation
                 break;
             case PlayerState.Walking:
-                if(direction.x < transform.position.x)
+                if(direction.x < 0)
                 {
                     spriteRenderer.flipX = true;
                 }
