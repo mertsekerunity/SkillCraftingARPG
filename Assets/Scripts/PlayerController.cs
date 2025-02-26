@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10f;
-    [SerializeField] float angularSpeed = 5f;
     [SerializeField] float craftingMaxCooldown = 0.4f;
 
     [SerializeField] SkillBook skillBookData; // Reference to the SkillBook ScriptableObject
@@ -14,6 +13,8 @@ public class PlayerController : MonoBehaviour
     PlayerMana playerMana;
     Camera mainCam;
     Rigidbody rb;
+    Animator animator; // Animator reference for handling animations
+    SpriteRenderer spriteRenderer; // SpriteRenderer reference for flipping the sprite
 
     List<Orb> activeOrbs = new List<Orb>();
 
@@ -27,6 +28,8 @@ public class PlayerController : MonoBehaviour
         mainCam = Camera.main;
         rb = GetComponent<Rigidbody>();
         playerMana = GetComponent<PlayerMana>();
+        animator = GetComponent<Animator>(); // Get the Animator component
+        spriteRenderer = GetComponent<SpriteRenderer>(); // Get the SpriteRenderer component
 
         maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length; // Number of available orb types
     }
@@ -45,13 +48,15 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
-        if (Input.GetMouseButton(0))
+        bool isMoving = false; // Track if player is moving
+
+        if (Input.GetMouseButton(0)) // If left mouse button is clicked
         {
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray.origin, ray.direction, out hit))
+            if (Physics.Raycast(ray.origin, ray.direction, out hit)) // Check if ray hits the ground
             {
                 targetPoint = hit.point;
             }
@@ -60,19 +65,27 @@ public class PlayerController : MonoBehaviour
                 return;
             }
 
-            targetPoint.y = transform.position.y;
-            float delta = moveSpeed * Time.deltaTime;
-            float angularDelta = angularSpeed * Time.deltaTime;
-            Vector3 direction = (targetPoint - rb.position).normalized;
-            Vector3 newPos = rb.position + direction * delta;
-            Vector3 newOrientation = Vector3.RotateTowards(rb.position, targetPoint, angularDelta, 0f);
-            newOrientation.x = 0;
-            newOrientation.z = 0;
-            Quaternion QuaternionNewOrientation = Quaternion.Euler(newOrientation);
+            targetPoint.y = transform.position.y; // Keep the movement on the same Y-axis
+            Vector3 direction = (targetPoint - rb.position).normalized; // Get movement direction
 
-            rb.MovePosition(newPos);
-            rb.MoveRotation(QuaternionNewOrientation);
+            if (direction.magnitude > 0.1f) // Prevent unnecessary micro movements
+            {
+                isMoving = true; // Player is moving
+
+                float delta = moveSpeed * Time.deltaTime;
+                Vector3 newPos = rb.position + direction * delta;
+                rb.MovePosition(newPos);
+
+                // Flip the sprite based on movement direction
+                if (direction.x > 0)
+                    spriteRenderer.flipX = false; // Facing right
+                else if (direction.x < 0)
+                    spriteRenderer.flipX = true; // Facing left
+            }
         }
+
+        // Update animation state
+        animator.SetBool("isWalking", isMoving);
     }
 
     void HandleOrbSelection()
