@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float moveSpeed = 10f;
     [SerializeField] float angularSpeed = 5f;
     [SerializeField] float craftingMaxCooldown = 0.4f;
+    [SerializeField] private SkillBook skillBookData;
 
     PlayerMana playerMana;
     Camera mainCam;
@@ -30,7 +31,6 @@ public class PlayerController : MonoBehaviour
         mainCam = Camera.main;
         rb = GetComponent<Rigidbody>();
         playerMana = GetComponent<PlayerMana>();
-        skillBook = SkillBook.GetSkills();
         craftSkill = new Skill("Craft", craftingMaxCooldown, 0);
     }
 
@@ -102,26 +102,20 @@ public class PlayerController : MonoBehaviour
     {
         if (activeOrbs.Count != maxOrbsCount) return;
 
-        if(craftSkill.skillCooldown > 0)
+        if (craftSkill.skillCooldown > 0)
         {
             craftSkill.skillCooldown -= Time.deltaTime;
         }
 
         if (Input.GetKeyDown(KeyCode.R) && craftSkill.skillCooldown <= 0)
         {
-            HashSet<Orb> orbSet = new HashSet<Orb>(activeOrbs);
+            SkillData skill = skillBookData.GetSkill(activeOrbs);
 
-            Debug.Log(string.Join(", ", orbSet));
-
-            if (skillBook.TryGetValue(orbSet, out Skill skill))
+            if (skill != null && this.skill.skillName != skill.skillName)
             {
-                if(this.skill != skill)
-                {
-                    Debug.Log($"Crafted Skill: {skill.skillName}");
-                    orbSet.Clear(); //not necessary imo?
-                    this.skill = skill;
-                    craftSkill.skillCooldown = craftSkill.skillMaxCooldown;
-                }
+                Debug.Log($"Crafted Skill: {skill.skillName}");
+                this.skill = new Skill(skill.skillName, skill.cooldown, skill.manaCost);
+                craftSkill.skillCooldown = craftSkill.skillMaxCooldown;
             }
         }
     }

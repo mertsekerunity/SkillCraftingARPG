@@ -672,6 +672,7 @@ MonoBehaviour:
   moveSpeed: 10
   angularSpeed: 30
   craftingMaxCooldown: 0.4
+  skillBookData: {fileID: 11400000, guid: 5371dca8794e098498a34cb7a1583637, type: 2}
 --- !u!54 &963109862
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -785,6 +786,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxMana: 100
+  manaRegen: 1.5
   mana: 0
 --- !u!1 &1648460537
 GameObject:
