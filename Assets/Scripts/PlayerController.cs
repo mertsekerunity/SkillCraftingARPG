@@ -219,8 +219,4 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-    void OnAnimationComplete()
-    {
-        animator.SetBool("isCastingSpell", false);
-    }
 }
