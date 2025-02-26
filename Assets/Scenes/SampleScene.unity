@@ -785,6 +785,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxMana: 100
+  manaRegen: 1.5
   mana: 0
 --- !u!1 &1648460537
 GameObject:

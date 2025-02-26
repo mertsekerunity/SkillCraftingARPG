@@ -8,6 +8,7 @@ public class Skill
     public float skillCooldown = 0f;
     public float skillMaxCooldown;
     public int requiredMana;
+    public string animationName;
 
     public Skill(string skillName, float skillMaxCooldown, int requiredMana)
     {

@@ -14,15 +14,20 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     Skill skill;
     Skill craftSkill;
+    Animator animator;
+    SpriteRenderer spriteRenderer;
+
+    PlayerState playerState = PlayerState.Idle;
 
 
     List<Orb> activeOrbs = new List<Orb>();
     Dictionary<HashSet<Orb>, Skill> skillBook;
 
     Vector3 targetPoint = new Vector3();
+    Vector3 direction;
+    float lastWalkingDirection;
 
     int maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length;
-    float craftingCooldown;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +36,9 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         playerMana = GetComponent<PlayerMana>();
         skillBook = SkillBook.GetSkills();
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         craftSkill = new Skill("Craft", craftingMaxCooldown, 0);
     }
 
@@ -40,6 +48,8 @@ public class PlayerController : MonoBehaviour
         HandleOrbSelection();
         HandleSkillCrafting();
         HandleSkillExecution();
+        HandleStates();
+        Debug.Log($"player state: {playerState}");
     }
 
     private void FixedUpdate()
@@ -58,16 +68,19 @@ public class PlayerController : MonoBehaviour
             if(Physics.Raycast(ray.origin, ray.direction, out hit))
             {
                 targetPoint = hit.point;
+                playerState = PlayerState.Walking;
             }
             else
             {
+                playerState = PlayerState.Idle;
                 return;
             }
 
             targetPoint.y = transform.position.y;
             float delta = moveSpeed * Time.deltaTime;
             float angularDelta = angularSpeed * Time.deltaTime;
-            Vector3 direction = (targetPoint - rb.position).normalized;
+            direction = (targetPoint - rb.position).normalized;
+            lastWalkingDirection = direction.x;
             Vector3 newPos = rb.position + direction * delta;
             Vector3 newOrientation = Vector3.RotateTowards(rb.position, targetPoint, angularDelta, 0f);
             newOrientation.x = 0;
@@ -77,6 +90,8 @@ public class PlayerController : MonoBehaviour
             rb.MovePosition(newPos);
             rb.MoveRotation(QuaternionNewOrientation);
         }
+
+        playerState = PlayerState.Idle;
     }
 
     void HandleOrbSelection()
@@ -140,10 +155,58 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log($"{skill.skillName} is used.");
 
+            //animator.SetBool("SpecialAbility1North", true);
+            //animator.SetBool("isSpecialAbility1", true);
+
+            animator.SetBool("CastSpellEast", true);
+            animator.SetBool("isCastingSpell", true);
+
             playerMana.ModifyMana(skill);
             Debug.Log($" {playerMana.mana} MP left.");
 
             skill.skillCooldown = skill.skillMaxCooldown;
         }
+    }
+
+    void HandleStates()
+    {
+        switch (playerState)
+        {
+            case PlayerState.Idle:
+                if(lastWalkingDirection < 0)
+                {
+                    spriteRenderer.flipX = true;
+                }
+                else
+                {
+                    spriteRenderer.flipX = false;
+                }
+                // play idle animation
+                break;
+            case PlayerState.Walking:
+                if(direction.x < transform.position.x)
+                {
+                    spriteRenderer.flipX = true;
+                }
+                else
+                {
+                    spriteRenderer.flipX = false;
+                }
+                // play walking animation
+                break;
+            case PlayerState.Attacking:
+                //play attack animation
+                break;
+            case PlayerState.UsingSkill:
+                //play skill animations
+                break;
+            default:
+                // play idle animation
+                break;
+        }
+    }
+    void OnAnimationComplete()
+    {
+        animator.SetBool("isCastingSpell", false);
     }
 }
