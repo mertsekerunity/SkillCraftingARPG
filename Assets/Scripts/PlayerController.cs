@@ -1,40 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10f;
     [SerializeField] float angularSpeed = 5f;
     [SerializeField] float craftingMaxCooldown = 0.4f;
-    [SerializeField] private SkillBook skillBookData;
+
+    [SerializeField] SkillBook skillBookData; // Reference to the SkillBook ScriptableObject
+    SkillData currentSkill; // Stores the currently crafted skill
 
     PlayerMana playerMana;
     Camera mainCam;
     Rigidbody rb;
-    Skill skill;
-    Skill craftSkill;
-
 
     List<Orb> activeOrbs = new List<Orb>();
-    Dictionary<HashSet<Orb>, Skill> skillBook;
 
     Vector3 targetPoint = new Vector3();
-
-    int maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length;
+    int maxOrbsCount;
     float craftingCooldown;
+    float currentSkillCooldown = 0f; // Track cooldown separately
 
-    // Start is called before the first frame update
     void Start()
     {
         mainCam = Camera.main;
         rb = GetComponent<Rigidbody>();
         playerMana = GetComponent<PlayerMana>();
-        craftSkill = new Skill("Craft", craftingMaxCooldown, 0);
+
+        maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length; // Number of available orb types
     }
 
-    // Update is called once per frame
     void Update()
     {
         HandleOrbSelection();
@@ -42,7 +38,7 @@ public class PlayerController : MonoBehaviour
         HandleSkillExecution();
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         HandleMovement();
     }
@@ -55,7 +51,7 @@ public class PlayerController : MonoBehaviour
             Ray ray = mainCam.ScreenPointToRay(mousePos);
             RaycastHit hit;
 
-            if(Physics.Raycast(ray.origin, ray.direction, out hit))
+            if (Physics.Raycast(ray.origin, ray.direction, out hit))
             {
                 targetPoint = hit.point;
             }
@@ -88,13 +84,12 @@ public class PlayerController : MonoBehaviour
 
     void AddOrb(Orb orb)
     {
-        if(activeOrbs.Count >= maxOrbsCount)
+        if (activeOrbs.Count >= maxOrbsCount)
         {
             activeOrbs.RemoveAt(0);
         }
 
         activeOrbs.Add(orb);
-
         Debug.Log($"Current orbs: {string.Join(", ", activeOrbs)}");
     }
 
@@ -102,42 +97,43 @@ public class PlayerController : MonoBehaviour
     {
         if (activeOrbs.Count != maxOrbsCount) return;
 
-        if (craftSkill.skillCooldown > 0)
+        if (craftingCooldown > 0)
         {
-            craftSkill.skillCooldown -= Time.deltaTime;
+            craftingCooldown -= Time.deltaTime;
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && craftSkill.skillCooldown <= 0)
+        if (Input.GetKeyDown(KeyCode.R) && craftingCooldown <= 0)
         {
-            SkillData skill = skillBookData.GetSkill(activeOrbs);
+            SkillData newSkill = skillBookData.GetSkill(activeOrbs);
 
-            if (skill != null && this.skill.skillName != skill.skillName)
+            if (newSkill != null && (currentSkill == null || currentSkill.skillName != newSkill.skillName))
             {
-                Debug.Log($"Crafted Skill: {skill.skillName}");
-                this.skill = new Skill(skill.skillName, skill.cooldown, skill.manaCost);
-                craftSkill.skillCooldown = craftSkill.skillMaxCooldown;
+                Debug.Log($"Crafted Skill: {newSkill.skillName}");
+                currentSkill = newSkill;
+                craftingCooldown = craftingMaxCooldown; // Apply cooldown to prevent immediate recrafting
             }
         }
     }
 
     void HandleSkillExecution()
     {
-        if (skill == null) return;
+        if (currentSkill == null) return;
 
-        if(skill.skillCooldown > 0)
+        if (currentSkillCooldown > 0)
         {
-            skill.skillCooldown -= Time.deltaTime;
+            currentSkillCooldown -= Time.deltaTime;
         }
-        Debug.Log($"Remaining cooldown to use {skill.skillName}: {skill.skillCooldown} secs");
 
-        if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana.mana >= skill.requiredMana)
+        Debug.Log($"Remaining cooldown for {currentSkill.skillName}: {currentSkillCooldown} secs");
+
+        if (Input.GetKeyDown(KeyCode.D) && currentSkillCooldown <= 0 && playerMana.mana >= currentSkill.manaCost)
         {
-            Debug.Log($"{skill.skillName} is used.");
+            Debug.Log($"{currentSkill.skillName} is used.");
 
-            playerMana.ModifyMana(skill);
-            Debug.Log($" {playerMana.mana} MP left.");
+            playerMana.ModifyMana(currentSkill);
+            Debug.Log($"{playerMana.mana} MP left.");
 
-            skill.skillCooldown = skill.skillMaxCooldown;
+            currentSkillCooldown = currentSkill.cooldown;
         }
     }
 }

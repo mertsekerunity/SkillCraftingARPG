@@ -26,13 +26,13 @@ public class PlayerMana : MonoBehaviour
         mana = Mathf.Clamp(mana, 0, maxMana);
     }
 
-    public void ModifyMana(Skill skill)
-    {        
-        if(skill != null)
+    public void ModifyMana(SkillData skill)
+    {
+        if (skill != null)
         {
-            if (mana >= skill.requiredMana)
+            if (mana >= skill.manaCost)
             {
-                mana -= skill.requiredMana;
+                mana -= skill.manaCost;
             }
         }
     }

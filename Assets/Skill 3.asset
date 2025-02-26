@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c9b145139bf5624b8002848e4c46283, type: 3}
   m_Name: Skill 3
   m_EditorClassIdentifier: 
-  skillName: 
-  cooldown: 0
+  skillName: Skill 3
+  cooldown: 15
   manaCost: 0

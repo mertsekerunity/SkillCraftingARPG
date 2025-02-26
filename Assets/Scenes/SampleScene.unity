@@ -673,6 +673,8 @@ MonoBehaviour:
   angularSpeed: 30
   craftingMaxCooldown: 0.4
   skillBookData: {fileID: 11400000, guid: 5371dca8794e098498a34cb7a1583637, type: 2}
+  craftSkillData: {fileID: 0}
+  currentSkill: {fileID: 0}
 --- !u!54 &963109862
 Rigidbody:
   m_ObjectHideFlags: 0
