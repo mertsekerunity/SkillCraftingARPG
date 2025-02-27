@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
 
     float lastWalkingDirection;
     float lastAttackingDirection;
-    float lastUsingSkillDirection;
+    public Vector3 lastUsingSkillDirection;
 
     int maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length;
 
@@ -173,7 +173,8 @@ public class PlayerController : MonoBehaviour
             {
                 EnemyHealth target = hit.transform.GetComponent<EnemyHealth>();
                 direction = (target.transform.position - rb.position).normalized;
-                lastUsingSkillDirection = direction.x;
+                lastUsingSkillDirection = direction;
+                //lastUsingSkillDirection.x = direction.x;
 
                 if (target != null)
                 {
