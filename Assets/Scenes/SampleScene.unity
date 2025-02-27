@@ -405,6 +405,7 @@ GameObject:
   - component: {fileID: 368720469}
   - component: {fileID: 368720471}
   - component: {fileID: 368720470}
+  - component: {fileID: 368720472}
   m_Layer: 6
   m_Name: Sprite
   m_TagString: Untagged
@@ -500,6 +501,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &368720472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 368720468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bab4828e22a742b4eadfe2dae2cedcef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireballPrefab: {fileID: 4961160486385896302, guid: 97b512130d13a1f4dab7bb7831748a3b,
+    type: 3}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0

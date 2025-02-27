@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float craftingMaxCooldown = 0.4f;
     [SerializeField] float attackDamage = 25f;
     [SerializeField] float attackRange = 20f;
+    
+
     [HideInInspector] public Vector3 direction;
 
     PlayerMana playerMana;
