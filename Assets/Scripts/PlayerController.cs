@@ -153,53 +153,58 @@ public class PlayerController : MonoBehaviour
 
     void HandleSkillExecution()
     {
-        if (skill == null) return;
+        if (skill == null)
+        {
+            return;
+        }
 
-        if(skill.skillCooldown > 0)
+        if (skill.skillCooldown > 0)
         {
             skill.skillCooldown -= Time.deltaTime;
         }
 
-        if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana.mana >= skill.requiredMana)
+        if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana != null && playerMana.mana >= skill.requiredMana)
         {
             playerState = PlayerState.UsingSkill;
 
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
             RaycastHit hit;
-            //LayerMask layerMask = LayerMask.GetMask("Enemy", "Wall");
 
             if (Physics.Raycast(ray.origin, ray.direction, out hit, skill.skillRange))
             {
-                EnemyHealth target = hit.transform.GetComponent<EnemyHealth>();
-                direction = (target.transform.position - rb.position).normalized;
-                lastUsingSkillDirection = direction.x;
+                EnemyHealth target = hit.transform?.GetComponent<EnemyHealth>();
 
                 if (target != null)
                 {
+                    direction = (target.transform.position - rb.position).normalized;
+                    lastUsingSkillDirection = direction.x;
+
                     float dist = Vector3.Distance(target.transform.position, transform.position);
                     target.TakeDamage(skill.skillDamage);
-                    //PlayHitEffect();
                 }
                 else
                 {
-                    Debug.Log("There is no target!!");
-                    //gerekli mi emin degilim !!
+                    Debug.LogWarning("Hit something, but it's not an enemy.");
                 }
             }
             else
             {
-                Debug.Log("There is no target!!");
+                Debug.LogWarning("No target hit.");
             }
 
-                Debug.Log($"{skill.skillName} is used.");
-
-            playerMana.ModifyMana(skill);
-            Debug.Log($" {playerMana.mana} MP left.");
+            if (playerMana != null)
+            {
+                playerMana.ModifyMana(skill);
+                Debug.Log($" {playerMana.mana} MP left.");
+            }
+            else
+            {
+                Debug.LogError("PlayerMana is null!");
+            }
 
             skill.skillCooldown = skill.skillMaxCooldown;
         }
-
         else if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown <= 0) && playerMana.mana >= skill.requiredMana)
         {
             Debug.Log($"Remaining cooldown to use {skill.skillName}: {skill.skillCooldown} secs");
