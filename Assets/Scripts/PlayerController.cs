@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.Playables;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10f;
-    [SerializeField] float angularSpeed = 5f;
     [SerializeField] float craftingMaxCooldown = 0.4f;
+    [SerializeField] float attackDamage = 25f;
+    [SerializeField] float attackRange = 20f;
+    [HideInInspector] public Vector3 direction;
 
     PlayerMana playerMana;
     Camera mainCam;
@@ -16,16 +19,18 @@ public class PlayerController : MonoBehaviour
     Skill craftSkill;
     Animator animator;
     SpriteRenderer spriteRenderer;
+    
 
     PlayerState playerState = PlayerState.Idle;
+    PlayerState previousState = PlayerState.Idle;
 
 
     List<Orb> activeOrbs = new List<Orb>();
     Dictionary<HashSet<Orb>, Skill> skillBook;
 
-    Vector3 targetPoint = new Vector3();
-    Vector3 direction;
     float lastWalkingDirection;
+    float lastAttackingDirection;
+    float lastUsingSkillDirection;
 
     int maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length;
 
@@ -36,10 +41,10 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         playerMana = GetComponent<PlayerMana>();
         skillBook = SkillBook.GetSkills();
-        animator = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponentInChildren<Animator>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
-        craftSkill = new Skill("Craft", craftingMaxCooldown, 0);
+        craftSkill = new Skill("Craft", craftingMaxCooldown, 0,0,0);
     }
 
     // Update is called once per frame
@@ -48,8 +53,15 @@ public class PlayerController : MonoBehaviour
         HandleOrbSelection();
         HandleSkillCrafting();
         HandleSkillExecution();
+        HandleAttackExecution();
         HandleStates();
-        Debug.Log($"player state: {playerState}");
+
+        if(playerState != previousState)
+        {
+            previousState = playerState;
+            Debug.Log($"player state changed to: {playerState}");
+        }
+        
     }
 
     private void FixedUpdate()
@@ -65,30 +77,24 @@ public class PlayerController : MonoBehaviour
             Ray ray = mainCam.ScreenPointToRay(mousePos);
             RaycastHit hit;
 
-            if(Physics.Raycast(ray.origin, ray.direction, out hit))
+            if (Physics.Raycast(ray.origin, ray.direction, out hit))
             {
-                targetPoint = hit.point;
                 playerState = PlayerState.Walking;
+
+                Vector3 targetPoint = hit.point;
+                direction = (targetPoint - rb.position).normalized;
+                targetPoint.y = transform.position.y;
+                float delta = moveSpeed * Time.deltaTime;
+                lastWalkingDirection = direction.x;
+                Vector3 newPos = rb.position + direction * delta;
+
+                rb.MovePosition(newPos);
             }
-            else
+            else 
             {
                 playerState = PlayerState.Idle;
                 return;
             }
-
-            targetPoint.y = transform.position.y;
-            float delta = moveSpeed * Time.deltaTime;
-            float angularDelta = angularSpeed * Time.deltaTime;
-            direction = (targetPoint - rb.position).normalized;
-            lastWalkingDirection = direction.x;
-            Vector3 newPos = rb.position + direction * delta;
-            //Vector3 newOrientation = Vector3.RotateTowards(rb.position, targetPoint, angularDelta, 0f);
-            //newOrientation.x = 0;
-            //newOrientation.z = 0;
-            //Quaternion QuaternionNewOrientation = Quaternion.Euler(newOrientation);
-
-            rb.MovePosition(newPos);
-            //rb.MoveRotation(QuaternionNewOrientation); //game is 3D but player has 2D sprite so it is not useful
         }
         else
         {
@@ -135,7 +141,7 @@ public class PlayerController : MonoBehaviour
                 if(this.skill != skill)
                 {
                     Debug.Log($"Crafted Skill: {skill.skillName}");
-                    orbSet.Clear(); //not necessary imo?
+                    orbSet.Clear();
                     this.skill = skill;
                     craftSkill.skillCooldown = craftSkill.skillMaxCooldown;
                 }
@@ -151,17 +157,83 @@ public class PlayerController : MonoBehaviour
         {
             skill.skillCooldown -= Time.deltaTime;
         }
-        Debug.Log($"Remaining cooldown to use {skill.skillName}: {skill.skillCooldown} secs");
 
         if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana.mana >= skill.requiredMana)
         {
             playerState = PlayerState.UsingSkill;
-            Debug.Log($"{skill.skillName} is used.");
+
+            Vector3 mousePos = Input.mousePosition;
+            Ray ray = mainCam.ScreenPointToRay(mousePos);
+            RaycastHit hit;
+            //LayerMask layerMask = LayerMask.GetMask("Enemy", "Wall");
+
+            if (Physics.Raycast(ray.origin, ray.direction, out hit, skill.skillRange))
+            {
+                EnemyHealth target = hit.transform.GetComponent<EnemyHealth>();
+                direction = (target.transform.position - rb.position).normalized;
+                lastUsingSkillDirection = direction.x;
+
+                if (target != null)
+                {
+                    float dist = Vector3.Distance(target.transform.position, transform.position);
+                    target.TakeDamage(skill.skillDamage);
+                    //PlayHitEffect();
+                }
+                else
+                {
+                    Debug.Log("There is no target!!");
+                    //gerekli mi emin degilim !!
+                }
+            }
+            else
+            {
+                Debug.Log("There is no target!!");
+            }
+
+                Debug.Log($"{skill.skillName} is used.");
 
             playerMana.ModifyMana(skill);
             Debug.Log($" {playerMana.mana} MP left.");
 
             skill.skillCooldown = skill.skillMaxCooldown;
+        }
+
+        else if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown <= 0) && playerMana.mana >= skill.requiredMana)
+        {
+            Debug.Log($"Remaining cooldown to use {skill.skillName}: {skill.skillCooldown} secs");
+        }
+
+        else if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana.mana < skill.requiredMana)
+        {
+            Debug.Log("Not enough mana!");
+        }
+    }
+
+    void HandleAttackExecution()  //attack cooldownu yok o yüzden tekrar attack edince bozuyor, onun icin bir mekanizma ekle!! GetMouseButtonDown?
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            playerState = PlayerState.Attacking;
+
+            Vector3 mousePos = Input.mousePosition;
+            Ray ray = mainCam.ScreenPointToRay(mousePos);
+            RaycastHit hit;
+            LayerMask layerMask = LayerMask.GetMask("Enemy");
+
+            if (Physics.Raycast(ray.origin, ray.direction, out hit, attackRange, layerMask))
+            {
+                EnemyHealth target = hit.transform.GetComponent<EnemyHealth>();
+                direction = (target.transform.position - rb.position).normalized;
+                lastAttackingDirection = direction.x;
+
+                if (target != null)
+                {
+                    float dist = Vector3.Distance(target.transform.position, transform.position);
+                    target.TakeDamage(attackDamage);
+                    //PlayHitEffect();
+                }
+                else return;
+            }
         }
     }
 
@@ -170,22 +242,20 @@ public class PlayerController : MonoBehaviour
         switch (playerState)
         {
             case PlayerState.Idle:
+                if (lastWalkingDirection < 0.02f)
+                {
+                    spriteRenderer.flipX = true;
+                }
+                else
+                {
+                    spriteRenderer.flipX = false;
+                }
+
                 animator.SetBool("isWalking", false); // play idle animation
 
-                if (lastWalkingDirection < 0)
-                {
-                    spriteRenderer.flipX = true;
-                }
-                else
-                {
-                    spriteRenderer.flipX = false;
-                }
-                
                 break;
             case PlayerState.Walking:
-                animator.SetBool("isWalking", true); // play walking animation
-
-                if (direction.x < 0)
+                if (direction.x < 0.02f)
                 {
                     spriteRenderer.flipX = true;
                 }
@@ -193,13 +263,32 @@ public class PlayerController : MonoBehaviour
                 {
                     spriteRenderer.flipX = false;
                 }
-                
+
+                animator.SetBool("isWalking", true); // play walking animation
+
                 break;
             case PlayerState.Attacking:
+                if (direction.x < 0.02f)
+                {
+                    spriteRenderer.flipX = true;
+                }
+                else
+                {
+                    spriteRenderer.flipX = false;
+                }
+
                 animator.SetTrigger("Attack"); //play attack animation
 
                 break;
             case PlayerState.UsingSkill:
+                if (direction.x < 0.02f)
+                {
+                    spriteRenderer.flipX = true;
+                }
+                else
+                {
+                    spriteRenderer.flipX = false;
+                }
 
                 switch (skill.skillName)
                 {

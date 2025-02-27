@@ -8,9 +8,9 @@ public static class SkillBook
 
     static void CreateSkills()
     {
-        skillBook.Add(new HashSet<Orb> { Orb.Quas, Orb.Quas}, new Skill("Skill 1", 15f, 30));
-        skillBook.Add(new HashSet<Orb> {Orb.Wex, Orb.Wex }, new Skill("Skill 2", 10f, 20));
-        skillBook.Add(new HashSet<Orb> {Orb.Quas, Orb.Wex }, new Skill("Skill 3", 4f, 8));
+        skillBook.Add(new HashSet<Orb> { Orb.Quas, Orb.Quas}, new Skill("Skill 1", 15f, 30, 1000f, 100f));
+        skillBook.Add(new HashSet<Orb> {Orb.Wex, Orb.Wex }, new Skill("Skill 2", 10f, 20, 1000f, 80f));
+        skillBook.Add(new HashSet<Orb> {Orb.Quas, Orb.Wex }, new Skill("Skill 3", 3f, 8, 600f, 20f));
     }
 
     public static Dictionary<HashSet<Orb>, Skill> GetSkills()
