@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     PlayerMana playerMana;
     Camera mainCam;
     Rigidbody rb;
-    Skill skill;
+    public Skill skill;
     Skill craftSkill;
     Animator animator;
     SpriteRenderer spriteRenderer;
@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
 
     float lastWalkingDirection;
     float lastAttackingDirection;
-    public Vector3 lastUsingSkillDirection;
+    float lastUsingSkillDirection;
 
     int maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length;
 
@@ -155,52 +155,31 @@ public class PlayerController : MonoBehaviour
     {
         if (skill == null) return;
 
-        if(skill.skillCooldown > 0)
+        if (skill.skillCooldown > 0)
         {
             skill.skillCooldown -= Time.deltaTime;
         }
 
         if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana.mana >= skill.requiredMana)
         {
-            playerState = PlayerState.UsingSkill;
-
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
             RaycastHit hit;
             //LayerMask layerMask = LayerMask.GetMask("Enemy", "Wall");
 
-            if (Physics.Raycast(ray.origin, ray.direction, out hit, skill.skillRange))
+            if (Physics.Raycast(ray.origin, ray.direction, out hit))
             {
-                EnemyHealth target = hit.transform.GetComponent<EnemyHealth>();
-                direction = (target.transform.position - rb.position).normalized;
-                lastUsingSkillDirection = direction;
-                //lastUsingSkillDirection.x = direction.x;
 
-                if (target != null)
-                {
-                    float dist = Vector3.Distance(target.transform.position, transform.position);
-                    target.TakeDamage(skill.skillDamage);
-                    //PlayHitEffect();
-                }
-                else
-                {
-                    Debug.Log("There is no target!!");
-                    //gerekli mi emin degilim !!
-                }
-            }
-            else
-            {
-                Debug.Log("There is no target!!");
-            }
+                playerState = PlayerState.UsingSkill;
 
                 Debug.Log($"{skill.skillName} is used.");
 
-            playerMana.ModifyMana(skill);
-            Debug.Log($" {playerMana.mana} MP left.");
+                playerMana.ModifyMana(skill);
+                Debug.Log($" {playerMana.mana} MP left.");
 
-            skill.skillCooldown = skill.skillMaxCooldown;
+                skill.skillCooldown = skill.skillMaxCooldown;
+            }
         }
-
         else if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown <= 0) && playerMana.mana >= skill.requiredMana)
         {
             Debug.Log($"Remaining cooldown to use {skill.skillName}: {skill.skillCooldown} secs");

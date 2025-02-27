@@ -515,7 +515,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fireballPrefab: {fileID: 7133750043317007609, guid: 7bdc030bf571c3a44b4baaf749f25a3c,
     type: 3}
-  projectileSpeed: 30
+  projectileSpeed: 10
+  spawnOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -861,6 +862,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 10
   craftingMaxCooldown: 0.4
+  attackDamage: 25
+  attackRange: 20
   direction: {x: 0, y: 0, z: 0}
 --- !u!54 &963109862
 Rigidbody:
