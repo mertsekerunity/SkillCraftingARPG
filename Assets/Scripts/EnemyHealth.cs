@@ -19,11 +19,11 @@ public class EnemyHealth : MonoBehaviour
     {
         health -= damage;
 
-        Debug.Log($"Remaining HP: {health}");
+        Debug.Log($"Remaining HP of the enemy: {health}");
 
         animator.SetTrigger("DamageTaken");
 
-        if(health <= 0)
+        if (health <= 0)
         {
             Death();
         }

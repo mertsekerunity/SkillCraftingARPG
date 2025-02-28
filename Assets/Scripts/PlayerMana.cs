@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class PlayerMana : MonoBehaviour
 {
-    PlayerController player;
-
     [SerializeField] int maxMana = 100;
     [SerializeField] float manaRegen = 1.5f; //per second
-    
+
     public float mana;
-    
+
     //public int Mana { get; private set; }
 
     // Start is called before the first frame update
@@ -27,8 +25,8 @@ public class PlayerMana : MonoBehaviour
     }
 
     public void ModifyMana(Skill skill)
-    {        
-        if(skill != null)
+    {
+        if (skill != null)
         {
             if (mana >= skill.requiredMana)
             {

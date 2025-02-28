@@ -13,49 +13,63 @@ public class SkillProjectileSpawner : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    public void SpawnProjectile()
+    public void SpawnProjectileForSkill(Skill skill)
     {
         // Get mouse position in world space
         Vector3 mousePos = Input.mousePosition;
         Ray ray = mainCamera.ScreenPointToRay(mousePos);
         RaycastHit hit;
+        Vector3 targetPoint;
 
         if (Physics.Raycast(ray, out hit))
         {
-            // Calculate direction from player to hit point
-            Vector3 playerPos = transform.position;
-            Vector3 targetPoint = hit.point;
-
-            // Maintain y-component for proper 3D direction
-            // This is important for the rotation calculation
-            Vector3 direction = (targetPoint - playerPos).normalized;
-
-            // Calculate spawn position (slightly offset from player if needed)
-            Vector3 spawnPosition = transform.position + spawnOffset;
-
-            // Create rotation that looks in the direction of the target
-            // Adding a 180-degree Y rotation to fix the backwards orientation
-            Quaternion targetRotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180, 0);
-
-            // Instantiate fireball at player's position with the proper rotation
-            GameObject fireball = Instantiate(fireballPrefab, spawnPosition, targetRotation);
-
-            // Get the Rigidbody component of the fireball
-            Rigidbody fireballRb = fireball.GetComponent<Rigidbody>();
-            if (fireballRb != null)
-            {
-                // Set velocity in the calculated direction
-                fireballRb.velocity = direction * projectileSpeed;
-
-                // Ensure no gravity and y-movement if needed in your game
-                fireballRb.useGravity = false;
-
-                // You may want to adjust or remove these constraints based on your game's design
-                // For a true 3D projectile, you might not want to freeze Y position
-                fireballRb.constraints = RigidbodyConstraints.FreezeRotation;
-            }
-
-            Debug.Log($"Fireball instantiated! Direction: {direction}, Rotation: {targetRotation.eulerAngles}");
+            targetPoint = hit.point;
         }
+        else
+        {
+            // If raycast doesn't hit anything, project to a far distance
+            targetPoint = ray.origin + ray.direction * 100f;
+        }
+
+        // Calculate direction from player to target point
+        Vector3 playerPos = transform.position;
+        Vector3 direction = (targetPoint - playerPos).normalized;
+
+        // Calculate spawn position (slightly offset from player if needed)
+        Vector3 spawnPosition = transform.position + spawnOffset;
+
+        // Create rotation that looks in the direction of the target
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+        // Instantiate fireball at player's position with the proper rotation
+        GameObject fireball = Instantiate(fireballPrefab, spawnPosition, targetRotation);
+
+        // Set the damage value directly from the skill
+        SkillProjectile projectile = fireball.GetComponent<SkillProjectile>();
+        if (projectile != null)
+        {
+            projectile.damage = skill.skillDamage;
+            projectile.speed = projectileSpeed;
+        }
+        else
+        {
+            Debug.LogError("SkillProjectile component missing from fireball prefab!");
+        }
+
+        // Get the Rigidbody component of the fireball
+        Rigidbody fireballRb = fireball.GetComponent<Rigidbody>();
+        if (fireballRb != null)
+        {
+            // Set velocity in the calculated direction
+            fireballRb.velocity = direction * projectileSpeed;
+
+            // Ensure no gravity for a straight path
+            fireballRb.useGravity = false;
+
+            // Freeze rotation to prevent the projectile from spinning
+            fireballRb.constraints = RigidbodyConstraints.FreezeRotation;
+        }
+
+        Debug.Log($"Fireball instantiated for {skill.skillName} with damage: {skill.skillDamage}, Direction: {direction}");
     }
 }

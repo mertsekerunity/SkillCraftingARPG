@@ -10,8 +10,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float craftingMaxCooldown = 0.4f;
     [SerializeField] float attackDamage = 25f;
     [SerializeField] float attackRange = 20f;
-    
 
+    [HideInInspector] public Skill currentActiveSkill = null;
     [HideInInspector] public Vector3 direction;
 
     PlayerMana playerMana;
@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     Skill craftSkill;
     Animator animator;
     SpriteRenderer spriteRenderer;
-    
+
 
     PlayerState playerState = PlayerState.Idle;
     PlayerState previousState = PlayerState.Idle;
@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
-        craftSkill = new Skill("Craft", craftingMaxCooldown, 0,0,0);
+        craftSkill = new Skill("Craft", craftingMaxCooldown, 0, 0, 0);
     }
 
     // Update is called once per frame
@@ -58,12 +58,12 @@ public class PlayerController : MonoBehaviour
         HandleAttackExecution();
         HandleStates();
 
-        if(playerState != previousState)
+        if (playerState != previousState)
         {
             previousState = playerState;
             Debug.Log($"player state changed to: {playerState}");
         }
-        
+
     }
 
     private void FixedUpdate()
@@ -92,7 +92,7 @@ public class PlayerController : MonoBehaviour
 
                 rb.MovePosition(newPos);
             }
-            else 
+            else
             {
                 playerState = PlayerState.Idle;
                 return;
@@ -113,21 +113,21 @@ public class PlayerController : MonoBehaviour
 
     void AddOrb(Orb orb)
     {
-        if(activeOrbs.Count >= maxOrbsCount)
+        if (activeOrbs.Count >= maxOrbsCount)
         {
             activeOrbs.RemoveAt(0);
         }
 
         activeOrbs.Add(orb);
 
-        Debug.Log($"Current orbs: {string.Join(", ", activeOrbs)}");
+        Debug.Log($"Current casted orbs: {string.Join(", ", activeOrbs)}");
     }
 
     void HandleSkillCrafting()
     {
         if (activeOrbs.Count != maxOrbsCount) return;
 
-        if(craftSkill.skillCooldown > 0)
+        if (craftSkill.skillCooldown > 0)
         {
             craftSkill.skillCooldown -= Time.deltaTime;
         }
@@ -136,11 +136,11 @@ public class PlayerController : MonoBehaviour
         {
             HashSet<Orb> orbSet = new HashSet<Orb>(activeOrbs);
 
-            Debug.Log(string.Join(", ", orbSet));
+            //Debug.Log(string.Join(", ", orbSet));
 
             if (skillBook.TryGetValue(orbSet, out Skill skill))
             {
-                if(this.skill != skill)
+                if (this.skill != skill)
                 {
                     Debug.Log($"Crafted Skill: {skill.skillName}");
                     orbSet.Clear();
@@ -166,33 +166,27 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana != null && playerMana.mana >= skill.requiredMana)
         {
             playerState = PlayerState.UsingSkill;
+            currentActiveSkill = skill; // Store the skill reference
 
+            // Direction calculation for animation
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
             RaycastHit hit;
+            Vector3 targetPoint;
 
-            if (Physics.Raycast(ray.origin, ray.direction, out hit, skill.skillRange))
+            if (Physics.Raycast(ray.origin, ray.direction, out hit))
             {
-                EnemyHealth target = hit.transform?.GetComponent<EnemyHealth>();
-
-                if (target != null)
-                {
-                    direction = (target.transform.position - rb.position).normalized;
-                    lastUsingSkillDirection = direction.x;
-
-                    float dist = Vector3.Distance(target.transform.position, transform.position);
-                    target.TakeDamage(skill.skillDamage);
-                }
-                else
-                {
-                    Debug.LogWarning("Hit something, but it's not an enemy.");
-                }
+                targetPoint = hit.point;
             }
             else
             {
-                Debug.LogWarning("No target hit.");
+                targetPoint = ray.origin + ray.direction * skill.skillRange;
             }
 
+            Vector3 direction = (targetPoint - transform.position).normalized;
+            lastUsingSkillDirection = direction.x;
+
+            // Handle mana consumption
             if (playerMana != null)
             {
                 playerMana.ModifyMana(skill);
@@ -203,16 +197,36 @@ public class PlayerController : MonoBehaviour
                 Debug.LogError("PlayerMana is null!");
             }
 
+            // Start cooldown
             skill.skillCooldown = skill.skillMaxCooldown;
         }
         else if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown <= 0) && playerMana.mana >= skill.requiredMana)
         {
             Debug.Log($"Remaining cooldown to use {skill.skillName}: {skill.skillCooldown} secs");
         }
-
         else if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana.mana < skill.requiredMana)
         {
             Debug.Log("Not enough mana!");
+        }
+    }
+
+    public void OnFireballAnimationEvent()
+    {
+        if (currentActiveSkill == null)
+        {
+            Debug.LogError("No active skill to cast!");
+            return;
+        }
+
+        // Get reference to the projectile spawner (with built-in null check)
+        if (TryGetComponent<SkillProjectileSpawner>(out var projectileSpawner))
+        {
+            // Spawn projectile with direct reference to skill
+            projectileSpawner.SpawnProjectileForSkill(currentActiveSkill);
+        }
+        else
+        {
+            Debug.LogError("SkillProjectileSpawner component missing from player!");
         }
     }
 
@@ -237,7 +251,6 @@ public class PlayerController : MonoBehaviour
                 {
                     float dist = Vector3.Distance(target.transform.position, transform.position);
                     target.TakeDamage(attackDamage);
-                    //PlayHitEffect();
                 }
                 else return;
             }
