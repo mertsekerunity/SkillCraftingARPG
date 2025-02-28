@@ -18,18 +18,16 @@ public class SkillDamage : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         EnemyHealth enemy = other.transform.GetComponent<EnemyHealth>();
-
         if (enemy != null)
         {
             float dist = Vector3.Distance(enemy.transform.position, playerController.transform.position);
 
-            if (dist >= playerController.skill.skillRange)
+            if (playerController.skill.skillRange >= dist)
             {
                 enemy.TakeDamage(playerController.skill.skillDamage);
                 //PlayHitEffect();
                 Destroy(gameObject, destroyDelay);
             }
-
         }
         else
         {

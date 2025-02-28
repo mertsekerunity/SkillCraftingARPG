@@ -151,6 +151,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    bool SkillButtonsPressed()
+    {
+        return (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.Space));
+    }
+
     void HandleSkillExecution()
     {
         if (skill == null) return;
@@ -160,7 +165,9 @@ public class PlayerController : MonoBehaviour
             skill.skillCooldown -= Time.deltaTime;
         }
 
-        if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana.mana >= skill.requiredMana)
+        bool isSkillExecutionPressed = SkillButtonsPressed();
+
+        if (isSkillExecutionPressed && !(skill.skillCooldown > 0) && playerMana.mana >= skill.requiredMana)
         {
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
@@ -180,12 +187,12 @@ public class PlayerController : MonoBehaviour
                 skill.skillCooldown = skill.skillMaxCooldown;
             }
         }
-        else if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown <= 0) && playerMana.mana >= skill.requiredMana)
+        else if (isSkillExecutionPressed && !(skill.skillCooldown <= 0) && playerMana.mana >= skill.requiredMana)
         {
             Debug.Log($"Remaining cooldown to use {skill.skillName}: {skill.skillCooldown} secs");
         }
 
-        else if (Input.GetKeyDown(KeyCode.D) && !(skill.skillCooldown > 0) && playerMana.mana < skill.requiredMana)
+        else if (isSkillExecutionPressed && !(skill.skillCooldown > 0) && playerMana.mana < skill.requiredMana)
         {
             Debug.Log("Not enough mana!");
         }
