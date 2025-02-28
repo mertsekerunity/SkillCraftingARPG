@@ -8,11 +8,20 @@ public class SkillDamage : MonoBehaviour
     [SerializeField] float destroyDelay = 0.3f;
 
     PlayerController playerController;
+
+    float damage;
+    float range;
     // Start is called before the first frame update
     void Start()
     {
         playerController = FindObjectOfType<PlayerController>();
         Physics.IgnoreLayerCollision(6, 9);
+    }
+
+    public void GetSkillData(float skillDamage, float skillRange)
+    {
+        damage = skillDamage;
+        range = skillRange;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -22,9 +31,9 @@ public class SkillDamage : MonoBehaviour
         {
             float dist = Vector3.Distance(enemy.transform.position, playerController.transform.position);
 
-            if (playerController.skill.skillRange >= dist)
+            if (range >= dist)
             {
-                enemy.TakeDamage(playerController.skill.skillDamage);
+                enemy.TakeDamage(damage);
                 //PlayHitEffect();
                 Destroy(gameObject, destroyDelay);
             }

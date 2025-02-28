@@ -9,10 +9,12 @@ public class SkillProjectileSpawner : MonoBehaviour
     [SerializeField] Vector3 spawnOffset = new Vector3(0, 1, 0); // Offset relatively from the player position
 
     private Camera mainCamera;
+    private PlayerController playerController;
 
     void Start()
     {
         mainCamera = Camera.main;
+        playerController = GetComponentInParent<PlayerController>();
     }
 
     public void SpawnProjectile()
@@ -41,6 +43,11 @@ public class SkillProjectileSpawner : MonoBehaviour
 
             // Instantiate fireball at player's position with the proper rotation
             GameObject fireball = Instantiate(fireballPrefab, spawnPosition, targetRotation);
+
+            //Cache current skill data
+            SkillDamage skillDamageComponent = fireball.GetComponent<SkillDamage>();
+
+            skillDamageComponent.GetSkillData(playerController.skill.skillDamage, playerController.skill.skillRange);
 
             // Get the Rigidbody component of the fireball
             Rigidbody fireballRb = fireball.GetComponent<Rigidbody>();
