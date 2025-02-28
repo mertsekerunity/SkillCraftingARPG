@@ -11,10 +11,11 @@ public class SkillDamage : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerController = GetComponentInParent<PlayerController>();
+        playerController = FindObjectOfType<PlayerController>();
+        Physics.IgnoreLayerCollision(6, 9);
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnTriggerEnter(Collider other)
     {
         EnemyHealth enemy = other.transform.GetComponent<EnemyHealth>();
 
@@ -26,9 +27,18 @@ public class SkillDamage : MonoBehaviour
             {
                 enemy.TakeDamage(playerController.skill.skillDamage);
                 //PlayHitEffect();
+                Destroy(gameObject, destroyDelay);
             }
 
         }
-        Destroy(gameObject, destroyDelay);
+        else
+        {
+            Debug.Log("Enemy is not found");
+        }
+
+        if (other.gameObject.layer == LayerMask.NameToLayer("Wall"))
+        {
+            Destroy(gameObject, destroyDelay);
+        }
     }
 }

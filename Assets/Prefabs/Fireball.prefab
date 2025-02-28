@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7590040501435393397}
   - component: {fileID: 329431399850716202}
   - component: {fileID: 8873475032765515878}
+  - component: {fileID: 7529443550947406720}
   m_Layer: 9
   m_Name: Fireball
   m_TagString: Untagged
@@ -3622,7 +3623,7 @@ ParticleSystem:
         m_NumAlphaKeys: 2
     range: {x: 0, y: 1}
   CollisionModule:
-    enabled: 1
+    enabled: 0
     serializedVersion: 4
     type: 1
     collisionMode: 0
@@ -4874,6 +4875,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyDelay: 0.3
+--- !u!135 &7529443550947406720
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133750043317007609}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 3.2210407
+  m_Center: {x: 0.36422223, y: 0.019230207, z: 2.1186104}
 --- !u!1 &8036568182444100197
 GameObject:
   m_ObjectHideFlags: 0
@@ -8493,7 +8515,7 @@ ParticleSystem:
         m_NumAlphaKeys: 2
     range: {x: 0, y: 1}
   CollisionModule:
-    enabled: 1
+    enabled: 0
     serializedVersion: 4
     type: 1
     collisionMode: 0

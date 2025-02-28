@@ -25,15 +25,15 @@ public class SkillProjectileSpawner : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             // Calculate direction from player to hit point
-            Vector3 playerPos = transform.position;
+            Vector3 playerPos = GetComponentInParent<Transform>().transform.position;
             Vector3 targetPoint = hit.point;
 
             // Maintain y-component for proper 3D direction
             // This is important for the rotation calculation
             Vector3 direction = (targetPoint - playerPos).normalized;
-
+            
             // Calculate spawn position (slightly offset from player if needed)
-            Vector3 spawnPosition = transform.position + spawnOffset;
+            Vector3 spawnPosition = playerPos + spawnOffset;
 
             // Create rotation that looks in the direction of the target
             // Adding a 180-degree Y rotation to fix the backwards orientation
@@ -47,6 +47,7 @@ public class SkillProjectileSpawner : MonoBehaviour
             if (fireballRb != null)
             {
                 // Set velocity in the calculated direction
+                direction.y = 0;
                 fireballRb.velocity = direction * projectileSpeed;
 
                 // Ensure no gravity and y-movement if needed in your game
@@ -54,6 +55,7 @@ public class SkillProjectileSpawner : MonoBehaviour
 
                 // You may want to adjust or remove these constraints based on your game's design
                 // For a true 3D projectile, you might not want to freeze Y position
+                
                 fireballRb.constraints = RigidbodyConstraints.FreezeRotation;
             }
 
