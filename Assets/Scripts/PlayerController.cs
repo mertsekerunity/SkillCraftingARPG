@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Playables;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float craftingMaxCooldown = 0.4f;
     [SerializeField] float attackDamage = 25f;
     [SerializeField] float attackRange = 20f;
+    [SerializeField] Image activeSkillIcon;
     
 
     [HideInInspector] public Vector3 direction;
