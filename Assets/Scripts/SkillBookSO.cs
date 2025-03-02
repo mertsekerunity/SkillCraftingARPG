@@ -1,0 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "New SkillBook", menuName = "Skills/New SkillBook")]
+public class SkillBookSO : ScriptableObject
+{
+    [SerializeField] List<SkillSO> skills; // A list of all skills, editable in the inspector
+
+    public HashSet<SkillSO> Skills => new HashSet<SkillSO>(skills);  // Return a HashSet for internal use
+
+}

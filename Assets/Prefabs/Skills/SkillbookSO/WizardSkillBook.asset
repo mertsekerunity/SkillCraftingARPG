@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba61bd94255117448a7d01150c57233b, type: 3}
+  m_Name: WizardSkillBook
+  m_EditorClassIdentifier: 
+  skills:
+  - {fileID: 11400000, guid: 5c8a7524363c68347ac50f9428a69678, type: 2}
+  - {fileID: 11400000, guid: 975cd3f5be4bf8646ad7582e1aba881c, type: 2}
+  - {fileID: 11400000, guid: 3450acf7b204cb64dac4a638ddb7a413, type: 2}
