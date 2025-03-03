@@ -67,7 +67,6 @@ namespace SmallScaleInc.TopDownPixelCharactersPack1
         }
 
 
-
         void FixedUpdate()
         {
             if (movementDirection != Vector2.zero)
@@ -127,7 +126,7 @@ namespace SmallScaleInc.TopDownPixelCharactersPack1
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.tag == "Stairs")
+            if (other.CompareTag("Stairs"))
             {
                 isOnStairs = true;
             }
@@ -135,7 +134,7 @@ namespace SmallScaleInc.TopDownPixelCharactersPack1
 
         private void OnTriggerExit2D(Collider2D other)
         {
-            if (other.tag == "Stairs")
+            if (other.CompareTag("Stairs"))
             {
                 isOnStairs = false;
             }
@@ -226,8 +225,7 @@ namespace SmallScaleInc.TopDownPixelCharactersPack1
         {
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             GameObject projectileInstance = Instantiate(projectilePrefab, transform.position, Quaternion.Euler(0, 0, angle));
-            Rigidbody2D rbProjectile = projectileInstance.GetComponent<Rigidbody2D>();
-            if (rbProjectile != null)
+            if (projectileInstance.TryGetComponent<Rigidbody2D>(out var rbProjectile))
             {
                 rbProjectile.velocity = direction * projectileSpeed;
             }
@@ -283,8 +281,5 @@ namespace SmallScaleInc.TopDownPixelCharactersPack1
                 Destroy(aoeInstance, 0.5f);
             }
         }
-
-
-
     }
 }

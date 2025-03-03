@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-    Animator animator;
+    [SerializeField] float health = 100f;
+    [SerializeField] float destroyDelay = 1.5f;
 
-    float health = 100f;
-    float destroyDelay = 1.5f;
     public bool IsDead { get; private set; }
+
+    Animator animator;
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +24,7 @@ public class EnemyHealth : MonoBehaviour
 
         animator.SetTrigger("DamageTaken");
 
-        if(health <= 0)
+        if (health <= 0)
         {
             Death();
         }

@@ -1,6 +1,4 @@
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class SkillProjectileSpawner : MonoBehaviour
 {
@@ -50,8 +48,7 @@ public class SkillProjectileSpawner : MonoBehaviour
             skillDamageComponent.GetSkillData(playerController.currentSkill.skillDamage, playerController.currentSkill.skillRange);
 
             // Get the Rigidbody component of the fireball
-            Rigidbody fireballRb = fireball.GetComponent<Rigidbody>();
-            if (fireballRb != null)
+            if (fireball.TryGetComponent<Rigidbody>(out var fireballRb))
             {
                 // Set velocity in the calculated direction
                 direction.y = 0;

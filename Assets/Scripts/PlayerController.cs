@@ -38,10 +38,10 @@ public class PlayerController : MonoBehaviour
     PlayerMana playerMana;
     Camera mainCam;
     Rigidbody rb;
-    public SkillSO currentSkill;
+    [HideInInspector] public SkillSO currentSkill;
     Animator animator;
     SpriteRenderer spriteRenderer;
-    
+
     PlayerState playerState = PlayerState.Idle;
     PlayerState previousState = PlayerState.Idle;
 
@@ -61,6 +61,12 @@ public class PlayerController : MonoBehaviour
         playerMana = GetComponent<PlayerMana>();
         animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        // Reset craft skill cooldown if needed
+        if (craftSkill != null)
+        {
+            craftSkill.skillCooldown = 0f;
+        }
     }
 
     // Update is called once per frame
@@ -72,12 +78,12 @@ public class PlayerController : MonoBehaviour
         HandleAttackExecution();
         HandleStates();
 
-        if(playerState != previousState)
+        if (playerState != previousState)
         {
             previousState = playerState;
             Debug.Log($"player state changed to: {playerState}");
         }
-        
+
     }
 
     private void FixedUpdate()
@@ -106,16 +112,16 @@ public class PlayerController : MonoBehaviour
 
                 rb.MovePosition(newPos);
 
-                if(firstActiveOrbPrefab != null)
+                if (firstActiveOrbPrefab != null)
                 {
                     firstActiveOrbPrefab.transform.position = firstActiveOrbPrefabLocation.transform.position;
                 }
-                if(secondActiveOrbPrefab != null)
+                if (secondActiveOrbPrefab != null)
                 {
                     secondActiveOrbPrefab.transform.position = secondActiveOrbPrefabLocation.transform.position;
                 }
             }
-            else 
+            else
             {
                 playerState = PlayerState.Idle;
                 return;
@@ -134,8 +140,8 @@ public class PlayerController : MonoBehaviour
             AddOrb(Orb.Quas);
         }
         if (Input.GetKeyDown(KeyCode.W))
-        { 
-            AddOrb(Orb.Wex); 
+        {
+            AddOrb(Orb.Wex);
         }
 
         //if (Input.GetKeyDown(KeyCode.E)) AddOrb(Orb.Exort);
@@ -143,88 +149,50 @@ public class PlayerController : MonoBehaviour
 
     void AddOrb(Orb orb)
     {
-        if(activeOrbs.Count >= maxOrbsCount)
+        // Get sprite and prefab based on orb type
+        Sprite orbSprite = orb == Orb.Quas ? quasSprite : wexSprite;
+        GameObject orbPrefab = orb == Orb.Quas ? quasPrefab : wexPrefab;
+
+        // Handle max orbs case
+        if (activeOrbs.Count >= maxOrbsCount)
         {
             activeOrbs.RemoveAt(0);
 
+            // Move second orb to first position
             firstActiveOrb.sprite = secondActiveOrb.sprite;
+            Destroy(firstActiveOrbPrefab);
+            firstActiveOrbPrefab = secondActiveOrbPrefab;
+            firstActiveOrbPrefab.transform.position = firstActiveOrbPrefabLocation.transform.position;
 
-            if (activeOrbs[0] == Orb.Quas)
-            {
-                Destroy(firstActiveOrbPrefab);
-
-                firstActiveOrbPrefab = Instantiate(quasPrefab, firstActiveOrbPrefabLocation.transform.position, Quaternion.identity);
-            }
-            else if (activeOrbs[0] == Orb.Wex)
-            {
-                Destroy(firstActiveOrbPrefab);
-
-                firstActiveOrbPrefab = Instantiate(wexPrefab, firstActiveOrbPrefabLocation.transform.position, Quaternion.identity);
-            }
-
-            if (orb == Orb.Quas)
-            {
-                secondActiveOrb.sprite = quasSprite;
-
-                if (secondActiveOrbPrefab != null) Destroy(secondActiveOrbPrefab);
-
-                secondActiveOrbPrefab = Instantiate(quasPrefab, secondActiveOrbPrefabLocation.transform.position, Quaternion.identity);
-            }
-            else if (orb == Orb.Wex)
-            {
-                secondActiveOrb.sprite = wexSprite;
-
-                if (secondActiveOrbPrefab != null) Destroy(secondActiveOrbPrefab);
-
-                secondActiveOrbPrefab = Instantiate(wexPrefab, secondActiveOrbPrefabLocation.transform.position, Quaternion.identity);
-            }
+            // Add new orb to second position
+            secondActiveOrb.sprite = orbSprite;
+            secondActiveOrbPrefab = Instantiate(orbPrefab, secondActiveOrbPrefabLocation.transform.position, Quaternion.identity);
         }
-
-        if (!firstActiveOrb.isActiveAndEnabled)
+        else
         {
-            firstActiveOrb.gameObject.SetActive(true);
+            // Determine which slot to fill
+            bool isFirstSlotEmpty = !firstActiveOrb.isActiveAndEnabled;
+            UnityEngine.UI.Image targetImage = isFirstSlotEmpty ? firstActiveOrb : secondActiveOrb;
+            GameObject targetLocation = isFirstSlotEmpty ? firstActiveOrbPrefabLocation : secondActiveOrbPrefabLocation;
 
-            if (orb == Orb.Quas)
+            // Set up the new orb
+            targetImage.gameObject.SetActive(true);
+            targetImage.sprite = orbSprite;
+
+            // Handle prefab instantiation
+            if (isFirstSlotEmpty)
             {
-                firstActiveOrb.sprite = quasSprite;
-
                 if (firstActiveOrbPrefab != null) Destroy(firstActiveOrbPrefab);
-
-                firstActiveOrbPrefab = Instantiate(quasPrefab, firstActiveOrbPrefabLocation.transform.position, Quaternion.identity);
+                firstActiveOrbPrefab = Instantiate(orbPrefab, targetLocation.transform.position, Quaternion.identity);
             }
-            else if (orb == Orb.Wex)
+            else
             {
-                firstActiveOrb.sprite = wexSprite;
-
-                if (firstActiveOrbPrefab != null) Destroy(firstActiveOrbPrefab);
-
-                firstActiveOrbPrefab = Instantiate(wexPrefab, firstActiveOrbPrefabLocation.transform.position, Quaternion.identity);
-            }
-        }
-        else if(!secondActiveOrb.isActiveAndEnabled)
-        {
-            secondActiveOrb.gameObject.SetActive(true);
-
-            if (orb == Orb.Quas)
-            {
-                secondActiveOrb.sprite = quasSprite;
-
                 if (secondActiveOrbPrefab != null) Destroy(secondActiveOrbPrefab);
-
-                secondActiveOrbPrefab = Instantiate(quasPrefab, secondActiveOrbPrefabLocation.transform.position, Quaternion.identity);
-            }
-            else if (orb == Orb.Wex)
-            {
-                secondActiveOrb.sprite = wexSprite;
-
-                if (secondActiveOrbPrefab != null) Destroy(secondActiveOrbPrefab);
-
-                secondActiveOrbPrefab = Instantiate(wexPrefab, secondActiveOrbPrefabLocation.transform.position, Quaternion.identity);
+                secondActiveOrbPrefab = Instantiate(orbPrefab, targetLocation.transform.position, Quaternion.identity);
             }
         }
 
         activeOrbs.Add(orb);
-
         Debug.Log($"Current orbs: {string.Join(", ", activeOrbs)}");
     }
 
@@ -232,7 +200,7 @@ public class PlayerController : MonoBehaviour
     {
         if (activeOrbs.Count != maxOrbsCount) return;
 
-        if(craftSkill.skillCooldown > 0)
+        if (craftSkill.skillCooldown > 0)
         {
             craftSkill.skillCooldown -= Time.deltaTime;
         }
@@ -243,15 +211,15 @@ public class PlayerController : MonoBehaviour
 
             Debug.Log(string.Join(", ", orbSet));
 
-            currentSkill = skillBookSO.GetSkill(orbSet); 
+            currentSkill = skillBookSO.GetSkill(orbSet);
 
-            if(currentSkill != null)
+            if (currentSkill != null)
             {
                 Debug.Log($"Crafted Skill: {currentSkill.skillName}");
 
                 craftSkill.skillCooldown = craftSkill.skillMaxCooldown;
 
-                if(currentSkill.skillIcon != null)
+                if (currentSkill.skillIcon != null)
                 {
                     activeSkillIcon.sprite = currentSkill.skillIcon;
                     activeSkillIcon.gameObject.SetActive(true);
@@ -266,10 +234,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    bool SkillButtonsPressed()
-    {
-        return (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.Space));
-    }
+    bool SkillButtonsPressed() => Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.Space);
 
     void HandleSkillExecution()
     {
@@ -343,73 +308,44 @@ public class PlayerController : MonoBehaviour
 
     void HandleStates()
     {
+        // Handle sprite flipping consistently across all states
+        bool shouldFlipSprite;
+
         switch (playerState)
         {
-            case PlayerState.Idle:
-                if (lastWalkingDirection < 0.02f)
-                {
-                    spriteRenderer.flipX = true;
-                }
-                else
-                {
-                    spriteRenderer.flipX = false;
-                }
-
-                animator.SetBool("isWalking", false); // play idle animation
-
-                break;
             case PlayerState.Walking:
-                if (direction.x < 0.02f)
-                {
-                    spriteRenderer.flipX = true;
-                }
-                else
-                {
-                    spriteRenderer.flipX = false;
-                }
-
-                animator.SetBool("isWalking", true); // play walking animation
-
+                shouldFlipSprite = direction.x < 0.02f; // When shouldFlipSprite is true (direction.x < 0.02f), it sets spriteRenderer.flipX = true
+                animator.SetBool("isWalking", true);    // When shouldFlipSprite is false (direction.x >= 0.02f), it sets spriteRenderer.flipX = false
                 break;
+
             case PlayerState.Attacking:
-                if (direction.x < 0.02f)
-                {
-                    spriteRenderer.flipX = true;
-                }
-                else
-                {
-                    spriteRenderer.flipX = false;
-                }
-
-                animator.SetTrigger("Attack"); //play attack animation
-
+                shouldFlipSprite = direction.x < 0.02f;
+                animator.SetTrigger("Attack");
                 break;
+
             case PlayerState.UsingSkill:
-                if (direction.x < 0.02f)
-                {
-                    spriteRenderer.flipX = true;
-                }
-                else
-                {
-                    spriteRenderer.flipX = false;
-                }
+                shouldFlipSprite = direction.x < 0.02f;
 
-                switch (currentSkill.skillName)
+                // Use a dictionary or switch without repeating the check
+                string triggerName = currentSkill?.skillName switch
                 {
-                    case "Fireball":
-                        animator.SetTrigger("Fireball"); //play skill 1 animation
-                        break;
-                    case "Ice Nova":
-                        animator.SetTrigger("Ice Nova"); //play skill 2 animation
-                        break;
-                    case "Lightning Bolt":
-                        animator.SetTrigger("Lightning Bolt"); //play skill 3 animation
-                        break;
-                }
+                    "Fireball" => "Fireball",
+                    "Ice Nova" => "Ice Nova",
+                    "Lightning Bolt" => "Lightning Bolt",
+                    _ => ""
+                };
+
+                if (!string.IsNullOrEmpty(triggerName))
+                    animator.SetTrigger(triggerName);
                 break;
+
+            case PlayerState.Idle:
             default:
-                // add hard reset for all animations, not only for walking and after force idle 
+                shouldFlipSprite = lastWalkingDirection < 0.02f;
+                animator.SetBool("isWalking", false);
                 break;
         }
+
+        spriteRenderer.flipX = shouldFlipSprite;
     }
 }
