@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ddbf36dca581a44d8182f7d590d05ca, type: 3}
   m_Name: Craft
   m_EditorClassIdentifier: 
+  skillCooldown: -0.00065367855
   skillName: Craft
   skillIcon: {fileID: 0}
   skillDamage: 0

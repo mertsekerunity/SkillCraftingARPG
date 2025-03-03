@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ddbf36dca581a44d8182f7d590d05ca, type: 3}
   m_Name: Lightning Bolt
   m_EditorClassIdentifier: 
-  skillCooldown: -0.009556113
+  skillCooldown: 0
   skillName: Lightning Bolt
   skillIcon: {fileID: 21300000, guid: 2456dd2824f5ec540830760922f5bac6, type: 3}
   skillDamage: 20

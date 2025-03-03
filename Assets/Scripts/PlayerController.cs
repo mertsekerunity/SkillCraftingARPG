@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Playables;
@@ -13,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float attackRange = 20f;
     [SerializeField] SkillSO craftSkill;
     [SerializeField] UnityEngine.UI.Image activeSkillIcon;
+    [SerializeField] UnityEngine.UI.Image timerImage;
 
     [SerializeField] UnityEngine.UI.Image firstActiveOrb;
     [SerializeField] UnityEngine.UI.Image secondActiveOrb;
@@ -72,7 +74,16 @@ public class PlayerController : MonoBehaviour
         HandleAttackExecution();
         HandleStates();
 
-        if(playerState != previousState)
+        if(currentSkill != null)
+        {
+            timerImage.fillAmount = currentSkill.skillCooldown / currentSkill.skillMaxCooldown;
+        }
+        else
+        {
+            timerImage.fillAmount = 0;
+        }
+
+        if (playerState != previousState)
         {
             previousState = playerState;
             Debug.Log($"player state changed to: {playerState}");
@@ -278,6 +289,8 @@ public class PlayerController : MonoBehaviour
         if (currentSkill.skillCooldown > 0)
         {
             currentSkill.skillCooldown -= Time.deltaTime;
+
+            
         }
 
         bool isSkillExecutionPressed = SkillButtonsPressed();
