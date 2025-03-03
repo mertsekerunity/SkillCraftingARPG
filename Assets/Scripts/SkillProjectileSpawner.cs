@@ -47,7 +47,7 @@ public class SkillProjectileSpawner : MonoBehaviour
             //Cache current skill data
             SkillDamage skillDamageComponent = fireball.GetComponent<SkillDamage>();
 
-            skillDamageComponent.GetSkillData(playerController.skill.skillDamage, playerController.skill.skillRange);
+            skillDamageComponent.GetSkillData(playerController.currentSkill.skillDamage, playerController.currentSkill.skillRange);
 
             // Get the Rigidbody component of the fireball
             Rigidbody fireballRb = fireball.GetComponent<Rigidbody>();

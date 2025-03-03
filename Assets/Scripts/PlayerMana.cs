@@ -26,7 +26,7 @@ public class PlayerMana : MonoBehaviour
         mana = Mathf.Clamp(mana, 0, maxMana);
     }
 
-    public void ModifyMana(Skill skill)
+    public void ModifyMana(SkillSO skill)
     {        
         if(skill != null)
         {

@@ -8,29 +8,26 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10f;
-    [SerializeField] float craftingMaxCooldown = 0.4f;
     [SerializeField] float attackDamage = 25f;
     [SerializeField] float attackRange = 20f;
-    [SerializeField] Image activeSkillIcon;
-    
+    [SerializeField] SkillSO craftSkill;
+
+    [SerializeField] SkillBookSO skillBookSO;
+
 
     [HideInInspector] public Vector3 direction;
 
     PlayerMana playerMana;
     Camera mainCam;
     Rigidbody rb;
-    public Skill skill;
-    Skill craftSkill;
+    public SkillSO currentSkill;
     Animator animator;
     SpriteRenderer spriteRenderer;
     
-
     PlayerState playerState = PlayerState.Idle;
     PlayerState previousState = PlayerState.Idle;
 
-
     List<Orb> activeOrbs = new List<Orb>();
-    Dictionary<HashSet<Orb>, Skill> skillBook;
 
     float lastWalkingDirection;
     float lastAttackingDirection;
@@ -44,11 +41,8 @@ public class PlayerController : MonoBehaviour
         mainCam = Camera.main;
         rb = GetComponent<Rigidbody>();
         playerMana = GetComponent<PlayerMana>();
-        skillBook = SkillBook.GetSkills();
         animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-
-        craftSkill = new Skill("Craft", craftingMaxCooldown, 0,0,0);
     }
 
     // Update is called once per frame
@@ -140,15 +134,13 @@ public class PlayerController : MonoBehaviour
 
             Debug.Log(string.Join(", ", orbSet));
 
-            if (skillBook.TryGetValue(orbSet, out Skill skill))
+            currentSkill = skillBookSO.GetSkill(orbSet); 
+
+            if(currentSkill != null)
             {
-                if(this.skill != skill)
-                {
-                    Debug.Log($"Crafted Skill: {skill.skillName}");
-                    orbSet.Clear();
-                    this.skill = skill;
-                    craftSkill.skillCooldown = craftSkill.skillMaxCooldown;
-                }
+                Debug.Log($"Crafted Skill: {currentSkill.skillName}");
+                orbSet.Clear();
+                craftSkill.skillCooldown = craftSkill.skillMaxCooldown;
             }
         }
     }
@@ -160,16 +152,16 @@ public class PlayerController : MonoBehaviour
 
     void HandleSkillExecution()
     {
-        if (skill == null) return;
+        if (currentSkill == null) return;
 
-        if (skill.skillCooldown > 0)
+        if (currentSkill.skillCooldown > 0)
         {
-            skill.skillCooldown -= Time.deltaTime;
+            currentSkill.skillCooldown -= Time.deltaTime;
         }
 
         bool isSkillExecutionPressed = SkillButtonsPressed();
 
-        if (isSkillExecutionPressed && !(skill.skillCooldown > 0) && playerMana.mana >= skill.requiredMana)
+        if (isSkillExecutionPressed && !(currentSkill.skillCooldown > 0) && playerMana.mana >= currentSkill.requiredMana)
         {
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
@@ -181,20 +173,20 @@ public class PlayerController : MonoBehaviour
 
                 playerState = PlayerState.UsingSkill;
 
-                Debug.Log($"{skill.skillName} is used.");
+                Debug.Log($"{currentSkill.skillName} is used.");
 
-                playerMana.ModifyMana(skill);
+                playerMana.ModifyMana(currentSkill);
                 Debug.Log($" {playerMana.mana} MP left.");
 
-                skill.skillCooldown = skill.skillMaxCooldown;
+                currentSkill.skillCooldown = currentSkill.skillMaxCooldown;
             }
         }
-        else if (isSkillExecutionPressed && !(skill.skillCooldown <= 0) && playerMana.mana >= skill.requiredMana)
+        else if (isSkillExecutionPressed && !(currentSkill.skillCooldown <= 0) && playerMana.mana >= currentSkill.requiredMana)
         {
-            Debug.Log($"Remaining cooldown to use {skill.skillName}: {skill.skillCooldown} secs");
+            Debug.Log($"Remaining cooldown to use {currentSkill.skillName}: {currentSkill.skillCooldown} secs");
         }
 
-        else if (isSkillExecutionPressed && !(skill.skillCooldown > 0) && playerMana.mana < skill.requiredMana)
+        else if (isSkillExecutionPressed && !(currentSkill.skillCooldown > 0) && playerMana.mana < currentSkill.requiredMana)
         {
             Debug.Log("Not enough mana!");
         }
@@ -281,16 +273,16 @@ public class PlayerController : MonoBehaviour
                     spriteRenderer.flipX = false;
                 }
 
-                switch (skill.skillName)
+                switch (currentSkill.skillName)
                 {
-                    case "Skill 1":
-                        animator.SetTrigger("Skill 1"); //play skill 1 animation
+                    case "Fireball":
+                        animator.SetTrigger("Fireball"); //play skill 1 animation
                         break;
-                    case "Skill 2":
-                        animator.SetTrigger("Skill 2"); //play skill 2 animation
+                    case "Ice Nova":
+                        animator.SetTrigger("Ice Nova"); //play skill 2 animation
                         break;
-                    case "Skill 3":
-                        animator.SetTrigger("Skill 3"); //play skill 3 animation
+                    case "Lightning Bolt":
+                        animator.SetTrigger("Lightning Bolt"); //play skill 3 animation
                         break;
                 }
                 break;

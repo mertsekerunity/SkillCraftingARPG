@@ -1485,7 +1485,8 @@ MonoBehaviour:
   craftingMaxCooldown: 0.4
   attackDamage: 25
   attackRange: 20
-  activeSkillIcon: {fileID: 0}
+  craftSkill: {fileID: 11400000, guid: 6f149b9fd2ade394cbafd365e7cf506a, type: 2}
+  skillBookSO: {fileID: 11400000, guid: e6bcec52f24639847ba61e162dc98834, type: 2}
   direction: {x: 0, y: 0, z: 0}
 --- !u!54 &963109862
 Rigidbody:

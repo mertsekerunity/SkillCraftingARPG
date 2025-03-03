@@ -9,4 +9,15 @@ public class SkillBookSO : ScriptableObject
 
     public HashSet<SkillSO> Skills => new HashSet<SkillSO>(skills);  // Return a HashSet for internal use
 
+    public SkillSO GetSkill(HashSet<Orb> orbs)
+    {
+        foreach (var skill in skills)
+        {
+            if (new HashSet<Orb>(skill.requiredOrbs).SetEquals(orbs))
+            {
+                return skill;
+            }
+        }
+        return null;  // If no matching skill is found
+    }
 }
