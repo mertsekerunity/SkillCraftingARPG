@@ -63,7 +63,6 @@ public class PlayerController : MonoBehaviour
         playerMana = GetComponent<PlayerMana>();
         animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        skillBookSO.SkillCooldownInitialization();
     }
 
     // Update is called once per frame

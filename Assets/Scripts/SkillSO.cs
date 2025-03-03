@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Skill", menuName = "Skills/New Skill")]
 public class SkillSO : ScriptableObject
 {
-    public float skillCooldown = 0f;
+    public float skillCooldown;
     public string skillName;
     public Sprite skillIcon;
     public float skillDamage;
@@ -15,5 +15,10 @@ public class SkillSO : ScriptableObject
 
     [SerializeField] List<Orb> _requiredOrbsList;  // Exposed in Inspector as List
     public HashSet<Orb> requiredOrbs => new HashSet<Orb>(_requiredOrbsList);  // Internally, use HashSet for efficiency
+
+    private void OnEnable()
+    {
+        skillCooldown = 0f;
+    }
 
 }
