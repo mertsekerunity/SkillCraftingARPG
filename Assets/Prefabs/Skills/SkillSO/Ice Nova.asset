@@ -19,5 +19,6 @@ MonoBehaviour:
   skillRange: 1000
   skillMaxCooldown: 3
   requiredMana: 20
-  skillPrefab: {fileID: 0}
+  skillPrefab: {fileID: 6957262817964657070, guid: 505abecff790c8b4e9e672dd2c6b194f,
+    type: 3}
   _requiredOrbsList: 0100000001000000

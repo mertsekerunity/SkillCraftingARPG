@@ -734,7 +734,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fireballPrefab: {fileID: 7133750043317007609, guid: 7bdc030bf571c3a44b4baaf749f25a3c,
     type: 3}
-  projectileSpeed: 10
+  projectileSpeed: 20
   spawnOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &373044941
 GameObject:
@@ -946,7 +946,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &507113204
 RectTransform:
   m_ObjectHideFlags: 0
@@ -978,7 +978,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: ea8b3cc13b98f5646b92386597aad801, type: 2}
+  m_Material: {fileID: 2100000, guid: 5048c231a3463864196a40ac64e71a90, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1525,7 +1525,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25d027fa088a0d84bb9922e90791812e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 10
+  moveSpeed: 20
   attackDamage: 25
   attackRange: 20
   craftSkill: {fileID: 11400000, guid: 6f149b9fd2ade394cbafd365e7cf506a, type: 2}

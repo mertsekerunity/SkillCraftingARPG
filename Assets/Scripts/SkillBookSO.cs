@@ -20,4 +20,12 @@ public class SkillBookSO : ScriptableObject
         }
         return null;  // If no matching skill is found
     }
+
+    public void SkillCooldownInitialization()
+    {
+        foreach(var skill in skills)
+        {
+            skill.skillCooldown = 0f;
+        }
+    }
 }
