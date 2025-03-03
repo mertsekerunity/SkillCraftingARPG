@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Playables;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,6 +12,23 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float attackDamage = 25f;
     [SerializeField] float attackRange = 20f;
     [SerializeField] SkillSO craftSkill;
+    [SerializeField] UnityEngine.UI.Image activeSkillIcon;
+
+    [SerializeField] UnityEngine.UI.Image firstActiveOrb;
+    [SerializeField] UnityEngine.UI.Image secondActiveOrb;
+
+    [SerializeField] Sprite quasSprite;
+    [SerializeField] Sprite wexSprite;
+
+    [SerializeField] GameObject quasPrefab;
+    [SerializeField] GameObject wexPrefab;
+
+    [SerializeField] GameObject firstActiveOrbPrefabLocation;
+    [SerializeField] GameObject secondActiveOrbPrefabLocation;
+
+    GameObject firstActiveOrbPrefab;
+    GameObject secondActiveOrbPrefab;
+
 
     [SerializeField] SkillBookSO skillBookSO;
 
@@ -87,6 +105,15 @@ public class PlayerController : MonoBehaviour
                 Vector3 newPos = rb.position + direction * delta;
 
                 rb.MovePosition(newPos);
+
+                if(firstActiveOrbPrefab != null)
+                {
+                    firstActiveOrbPrefab.transform.position = firstActiveOrbPrefabLocation.transform.position;
+                }
+                if(secondActiveOrbPrefab != null)
+                {
+                    secondActiveOrbPrefab.transform.position = secondActiveOrbPrefabLocation.transform.position;
+                }
             }
             else 
             {
@@ -102,8 +129,15 @@ public class PlayerController : MonoBehaviour
 
     void HandleOrbSelection()
     {
-        if (Input.GetKeyDown(KeyCode.Q)) AddOrb(Orb.Quas);
-        if (Input.GetKeyDown(KeyCode.W)) AddOrb(Orb.Wex);
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            AddOrb(Orb.Quas);
+        }
+        if (Input.GetKeyDown(KeyCode.W))
+        { 
+            AddOrb(Orb.Wex); 
+        }
+
         //if (Input.GetKeyDown(KeyCode.E)) AddOrb(Orb.Exort);
     }
 
@@ -112,6 +146,81 @@ public class PlayerController : MonoBehaviour
         if(activeOrbs.Count >= maxOrbsCount)
         {
             activeOrbs.RemoveAt(0);
+
+            firstActiveOrb.sprite = secondActiveOrb.sprite;
+
+            if (activeOrbs[0] == Orb.Quas)
+            {
+                Destroy(firstActiveOrbPrefab);
+
+                firstActiveOrbPrefab = Instantiate(quasPrefab, firstActiveOrbPrefabLocation.transform.position, Quaternion.identity);
+            }
+            else if (activeOrbs[0] == Orb.Wex)
+            {
+                Destroy(firstActiveOrbPrefab);
+
+                firstActiveOrbPrefab = Instantiate(wexPrefab, firstActiveOrbPrefabLocation.transform.position, Quaternion.identity);
+            }
+
+            if (orb == Orb.Quas)
+            {
+                secondActiveOrb.sprite = quasSprite;
+
+                if (secondActiveOrbPrefab != null) Destroy(secondActiveOrbPrefab);
+
+                secondActiveOrbPrefab = Instantiate(quasPrefab, secondActiveOrbPrefabLocation.transform.position, Quaternion.identity);
+            }
+            else if (orb == Orb.Wex)
+            {
+                secondActiveOrb.sprite = wexSprite;
+
+                if (secondActiveOrbPrefab != null) Destroy(secondActiveOrbPrefab);
+
+                secondActiveOrbPrefab = Instantiate(wexPrefab, secondActiveOrbPrefabLocation.transform.position, Quaternion.identity);
+            }
+        }
+
+        if (!firstActiveOrb.isActiveAndEnabled)
+        {
+            firstActiveOrb.gameObject.SetActive(true);
+
+            if (orb == Orb.Quas)
+            {
+                firstActiveOrb.sprite = quasSprite;
+
+                if (firstActiveOrbPrefab != null) Destroy(firstActiveOrbPrefab);
+
+                firstActiveOrbPrefab = Instantiate(quasPrefab, firstActiveOrbPrefabLocation.transform.position, Quaternion.identity);
+            }
+            else if (orb == Orb.Wex)
+            {
+                firstActiveOrb.sprite = wexSprite;
+
+                if (firstActiveOrbPrefab != null) Destroy(firstActiveOrbPrefab);
+
+                firstActiveOrbPrefab = Instantiate(wexPrefab, firstActiveOrbPrefabLocation.transform.position, Quaternion.identity);
+            }
+        }
+        else if(!secondActiveOrb.isActiveAndEnabled)
+        {
+            secondActiveOrb.gameObject.SetActive(true);
+
+            if (orb == Orb.Quas)
+            {
+                secondActiveOrb.sprite = quasSprite;
+
+                if (secondActiveOrbPrefab != null) Destroy(secondActiveOrbPrefab);
+
+                secondActiveOrbPrefab = Instantiate(quasPrefab, secondActiveOrbPrefabLocation.transform.position, Quaternion.identity);
+            }
+            else if (orb == Orb.Wex)
+            {
+                secondActiveOrb.sprite = wexSprite;
+
+                if (secondActiveOrbPrefab != null) Destroy(secondActiveOrbPrefab);
+
+                secondActiveOrbPrefab = Instantiate(wexPrefab, secondActiveOrbPrefabLocation.transform.position, Quaternion.identity);
+            }
         }
 
         activeOrbs.Add(orb);
@@ -139,8 +248,20 @@ public class PlayerController : MonoBehaviour
             if(currentSkill != null)
             {
                 Debug.Log($"Crafted Skill: {currentSkill.skillName}");
-                orbSet.Clear();
+
                 craftSkill.skillCooldown = craftSkill.skillMaxCooldown;
+
+                if(currentSkill.skillIcon != null)
+                {
+                    activeSkillIcon.sprite = currentSkill.skillIcon;
+                    activeSkillIcon.gameObject.SetActive(true);
+                }
+                else
+                {
+                    activeSkillIcon.gameObject.SetActive(false);
+                }
+
+                orbSet.Clear();
             }
         }
     }

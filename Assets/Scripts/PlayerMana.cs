@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMana : MonoBehaviour
 {
@@ -8,9 +9,10 @@ public class PlayerMana : MonoBehaviour
 
     [SerializeField] int maxMana = 100;
     [SerializeField] float manaRegen = 1.5f; //per second
-    
+    [SerializeField] Image manaDisplay;
+
     public float mana;
-    
+
     //public int Mana { get; private set; }
 
     // Start is called before the first frame update
@@ -24,11 +26,12 @@ public class PlayerMana : MonoBehaviour
     {
         mana += manaRegen * Time.deltaTime;
         mana = Mathf.Clamp(mana, 0, maxMana);
+        manaDisplay.fillAmount = mana / maxMana;
     }
 
     public void ModifyMana(SkillSO skill)
-    {        
-        if(skill != null)
+    {
+        if (skill != null)
         {
             if (mana >= skill.requiredMana)
             {

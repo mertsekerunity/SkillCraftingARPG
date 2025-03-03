@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ddbf36dca581a44d8182f7d590d05ca, type: 3}
   m_Name: Lightning Bolt
   m_EditorClassIdentifier: 
+  skillCooldown: -0.009556113
   skillName: Lightning Bolt
-  skillIcon: {fileID: 0}
+  skillIcon: {fileID: 21300000, guid: 2456dd2824f5ec540830760922f5bac6, type: 3}
   skillDamage: 20
   skillRange: 1200
   skillMaxCooldown: 1
   requiredMana: 15
+  skillPrefab: {fileID: 0}
   _requiredOrbsList: 0000000001000000
