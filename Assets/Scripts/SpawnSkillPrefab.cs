@@ -1,0 +1,49 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor.Experimental.GraphView;
+using static UnityEngine.GraphicsBuffer;
+
+public class SpawnSkillPrefab : MonoBehaviour
+{
+    private Camera mainCamera;
+    private PlayerController playerController;
+    [SerializeField] Vector3 spawnOffset = new Vector3(0, 1, 0); // Offset relatively from the player position
+
+    void Start()
+    {
+        mainCamera = Camera.main;
+        playerController = GetComponentInParent<PlayerController>();
+    }
+
+    public void SpawnPrefab()
+    {
+        // Get mouse position in world space
+        Vector3 mousePos = Input.mousePosition;
+        Ray ray = mainCamera.ScreenPointToRay(mousePos);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            // Calculate direction from player to hit point
+            Vector3 playerPos = GetComponentInParent<Transform>().transform.position;
+            Vector3 targetPoint = hit.point;
+
+            EnemyHealth enemy = hit.transform.GetComponent<EnemyHealth>();
+
+            // Calculate spawn position (slightly offset from player if needed)
+            Vector3 spawnPosition = playerPos + spawnOffset;
+
+            targetPoint = enemy.GetComponentInParent<Transform>().transform.position;
+            targetPoint.y = enemy.GetComponentInParent<Transform>().transform.position.y / 2;
+
+            // Instantiate fireball at player's position with the proper rotation
+            GameObject currentSkillPrefab = Instantiate(playerController.currentSkill.skillPrefab, targetPoint, Quaternion.identity);
+
+            //Cache current skill data
+            SkillDamage skillDamageComponent = currentSkillPrefab.GetComponent<SkillDamage>();
+
+            skillDamageComponent.GetSkillData(playerController.currentSkill.skillDamage, playerController.currentSkill.skillRange);
+        }
+    }
+}
