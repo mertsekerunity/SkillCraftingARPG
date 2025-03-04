@@ -10,8 +10,7 @@ using UnityEngine.UIElements;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10f;
-    [SerializeField] float attackDamage = 25f;
-    [SerializeField] float attackRange = 20f;
+    [SerializeField] GameObject attackPrefab;
     [SerializeField] SkillSO craftSkill;
     [SerializeField] UnityEngine.UI.Image activeSkillIcon;
     [SerializeField] UnityEngine.UI.Image timerImage;
@@ -27,6 +26,10 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] GameObject firstActiveOrbPrefabLocation;
     [SerializeField] GameObject secondActiveOrbPrefabLocation;
+
+    public float attackDamage = 25f;
+    public float attackRange = 20f;
+    public float attackProjectileSpeed = 40f;
 
     GameObject firstActiveOrbPrefab;
     GameObject secondActiveOrbPrefab;
@@ -326,7 +329,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void HandleAttackExecution()  //attack cooldownu yok o yüzden tekrar attack edince bozuyor, onun icin bir mekanizma ekle!! GetMouseButtonDown?
+    void HandleAttackExecution()  //attack cooldownu yok o yüzden tekrar attack edince bozuyor, onun icin bir mekanizma ekle
     {
         if (Input.GetMouseButtonDown(1))
         {
@@ -335,21 +338,47 @@ public class PlayerController : MonoBehaviour
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
             RaycastHit hit;
-            LayerMask layerMask = LayerMask.GetMask("Enemy");
 
-            if (Physics.Raycast(ray.origin, ray.direction, out hit, attackRange, layerMask))
+            if (Physics.Raycast(ray, out hit))
             {
+                Vector3 targetPoint = hit.point;
+                Vector3 direction = (targetPoint - transform.position).normalized;
+                Quaternion targetRotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180, 0);
+
+                if (activeOrbs.Count != maxOrbsCount) return;
+
+                ParticleSystem ps = attackPrefab.GetComponentInChildren<ParticleSystem>();
+                var main = ps.main;
+                main.startColor = Color.clear;
+
+                if(activeOrbs.Contains(Orb.Quas) && activeOrbs.Contains(Orb.Wex))
+                {
+                    main.startColor = Color.magenta;
+                }
+                else if (activeOrbs.Contains(Orb.Quas) && !activeOrbs.Contains(Orb.Wex)) 
+                {
+                    main.startColor = (Color.red + Color.yellow)/2;
+                }
+                else if (activeOrbs.Contains(Orb.Wex) && !activeOrbs.Contains(Orb.Quas))
+                {
+                    main.startColor = Color.cyan;
+                }
+
+                GameObject attack = Instantiate(attackPrefab, transform.position, targetRotation);
+
+                Rigidbody attackRb = attack.GetComponent<Rigidbody>();
+
+                if(attack != null)
+                {
+                    direction.y = 0;
+                    attackRb.velocity = direction * attackProjectileSpeed;
+                    attackRb.useGravity = false;
+                    attackRb.constraints = RigidbodyConstraints.FreezeRotation;
+                    lastAttackingDirection = direction.x;
+                }
+
                 EnemyHealth target = hit.transform.GetComponent<EnemyHealth>();
                 direction = (target.transform.position - rb.position).normalized;
-                lastAttackingDirection = direction.x;
-
-                if (target != null)
-                {
-                    float dist = Vector3.Distance(target.transform.position, transform.position);
-                    target.TakeDamage(attackDamage);
-                    //PlayHitEffect();
-                }
-                else return;
             }
         }
     }

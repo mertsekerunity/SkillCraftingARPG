@@ -850,7 +850,6 @@ GameObject:
   - component: {fileID: 368720469}
   - component: {fileID: 368720471}
   - component: {fileID: 368720470}
-  - component: {fileID: 368720472}
   - component: {fileID: 368720473}
   m_Layer: 6
   m_Name: Sprite
@@ -947,22 +946,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &368720472
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 368720468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bab4828e22a742b4eadfe2dae2cedcef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fireballPrefab: {fileID: 7133750043317007609, guid: 7bdc030bf571c3a44b4baaf749f25a3c,
-    type: 3}
-  projectileSpeed: 40
-  spawnOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &368720473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2603,8 +2586,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 20
-  attackDamage: 25
-  attackRange: 20
+  attackPrefab: {fileID: 7133750043317007609, guid: af6f9443d91589a46ac7acc60a1b367b,
+    type: 3}
   craftSkill: {fileID: 11400000, guid: 6f149b9fd2ade394cbafd365e7cf506a, type: 2}
   activeSkillIcon: {fileID: 1599432722}
   timerImage: {fileID: 1391194675}
@@ -2618,6 +2601,9 @@ MonoBehaviour:
     type: 3}
   firstActiveOrbPrefabLocation: {fileID: 732849246}
   secondActiveOrbPrefabLocation: {fileID: 1461108853}
+  attackDamage: 25
+  attackRange: 1000
+  attackProjectileSpeed: 40
   skillBookSO: {fileID: 11400000, guid: e6bcec52f24639847ba61e162dc98834, type: 2}
   direction: {x: 0, y: 0, z: 0}
   currentSkill: {fileID: 0}
