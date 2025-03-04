@@ -249,6 +249,11 @@ public class PlayerController : MonoBehaviour
         if(craftSkill.skillCooldown > 0)
         {
             craftSkill.skillCooldown -= Time.deltaTime;
+
+            if(craftSkill.skillCooldown < 0)
+            {
+                craftSkill.skillCooldown = 0;
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.R) && craftSkill.skillCooldown <= 0)
@@ -438,11 +443,11 @@ public class PlayerController : MonoBehaviour
 
                 switch (currentSkill.skillName)
                 {
-                    case "Fireball":
-                        animator.SetTrigger("Fireball"); //play skill 1 animation
+                    case "Inferno":
+                        animator.SetTrigger("Inferno"); //play skill 1 animation
                         break;
-                    case "Ice Nova":
-                        animator.SetTrigger("Ice Nova"); //play skill 2 animation
+                    case "Tornado":
+                        animator.SetTrigger("Tornado"); //play skill 2 animation
                         break;
                     case "Lightning Bolt":
                         animator.SetTrigger("Lightning Bolt"); //play skill 3 animation
