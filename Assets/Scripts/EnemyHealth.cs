@@ -6,8 +6,8 @@ public class EnemyHealth : MonoBehaviour
 {
     Animator animator;
 
-    float health = 100f;
-    float destroyDelay = 1.5f;
+    [SerializeField] float health = 100f;
+    [SerializeField] float destroyDelay = 1.5f;
     public bool IsDead { get; private set; }
 
     // Start is called before the first frame update
