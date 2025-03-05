@@ -410,9 +410,6 @@ public class PlayerController : MonoBehaviour
                     attackRb.constraints = RigidbodyConstraints.FreezeRotation;
                     lastAttackingDirection = direction.x;
                 }
-
-                EnemyHealth target = hit.transform.GetComponent<EnemyHealth>();
-                direction = (target.transform.position - rb.position).normalized;
             }
         }
     }

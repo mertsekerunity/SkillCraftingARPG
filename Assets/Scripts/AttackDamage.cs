@@ -18,9 +18,10 @@ public class AttackDamage : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        EnemyHealth enemy = other.transform.GetComponent<EnemyHealth>();
-        if (enemy != null)
+        if (other.transform.GetComponent<EnemyHealth>() != null)
         {
+            EnemyHealth enemy = other.transform.GetComponent<EnemyHealth>();
+
             float dist = Vector3.Distance(enemy.transform.position, playerController.transform.position);
 
             if (playerController.attackRange >= dist)
