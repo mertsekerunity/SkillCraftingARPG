@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,7 @@ public class PlayerMana : MonoBehaviour
     [SerializeField] int maxMana = 100;
     [SerializeField] float manaRegen = 1.5f; //per second
     [SerializeField] Image manaDisplay;
+    [SerializeField] TextMeshProUGUI manaText;
 
     public float mana;
 
@@ -27,6 +29,7 @@ public class PlayerMana : MonoBehaviour
         mana += manaRegen * Time.deltaTime;
         mana = Mathf.Clamp(mana, 0, maxMana);
         manaDisplay.fillAmount = mana / maxMana;
+        manaText.text = $"MP: {(int)mana} / {maxMana}";
     }
 
     public void ModifyMana(SkillSO skill)

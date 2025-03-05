@@ -34,14 +34,23 @@ public class SpawnSkillPrefab : MonoBehaviour
             // Calculate spawn position (slightly offset from player if needed)
             Vector3 spawnPosition = playerPos + spawnOffset;
 
-            targetPoint = enemy.transform.position;
-            targetPoint.y = enemy.transform.position.y / 2;
+            if(enemy != null)
+            {
+                targetPoint = enemy.transform.position;
+                targetPoint.y = enemy.transform.position.y / 2;
+            }
+            else
+            {
+                targetPoint += spawnOffset;
+            }
 
-            Vector3 direction = (targetPoint - transform.position).normalized;
+                Vector3 direction = (targetPoint - transform.position).normalized;
             Quaternion targetRotation = Quaternion.LookRotation(direction);
 
             // Instantiate fireball at player's position with the proper rotation
             GameObject currentSkillPrefab = Instantiate(playerController.currentSkill.skillPrefab, targetPoint, targetRotation);
+
+            if (enemy == null) return;
 
             //Cache current skill data
             SkillDamage skillDamageComponent = currentSkillPrefab.GetComponent<SkillDamage>();
