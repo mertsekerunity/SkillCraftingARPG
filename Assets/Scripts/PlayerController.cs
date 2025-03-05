@@ -101,38 +101,67 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
-        if (Input.GetMouseButton(0))
+        if (!Input.GetMouseButton(0))
         {
-            Vector3 mousePos = Input.mousePosition;
-            Ray ray = mainCam.ScreenPointToRay(mousePos);
-            RaycastHit hit;
+            playerState = PlayerState.Idle;
+            return;
+        }
 
-            if (Physics.Raycast(ray.origin, ray.direction, out hit))
+        Vector3 mousePos = Input.mousePosition;
+        Ray ray = mainCam.ScreenPointToRay(mousePos);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray.origin, ray.direction, out hit))
+        {
+            playerState = PlayerState.Walking;
+
+            Vector3 targetPoint = hit.point;
+            direction = (targetPoint - rb.position).normalized;
+            direction.y = 0;             
+            lastWalkingDirection = direction.x;
+
+            float moveDistance = moveSpeed * Time.deltaTime;
+
+            RaycastHit sweepHit;
+            bool wouldCollide = rb.SweepTest(direction, out sweepHit, moveDistance);
+
+            if (wouldCollide)
             {
-                playerState = PlayerState.Walking;
-
-                Vector3 targetPoint = hit.point;
-                direction = (targetPoint - rb.position).normalized;
-                targetPoint.y = transform.position.y;
-                float delta = moveSpeed * Time.deltaTime;
-                lastWalkingDirection = direction.x;
-                Vector3 newPos = rb.position + direction * delta;
-
-                rb.MovePosition(newPos);
-
-                if(firstActiveOrbPrefab != null)
+                if (sweepHit.collider.gameObject.layer == LayerMask.NameToLayer("Wall") ||
+                    sweepHit.collider.CompareTag("Obstacle"))
                 {
-                    firstActiveOrbPrefab.transform.position = firstActiveOrbPrefabLocation.transform.position;
+                    float adjustedDistance = Mathf.Max(0, sweepHit.distance - 0.1f);
+
+                    if (adjustedDistance > 0.01f)
+                    {
+                        Vector3 newPos = rb.position + direction * adjustedDistance;
+                        rb.MovePosition(newPos);
+                    }
+
+                    if (Vector3.Dot(direction, (sweepHit.point - rb.position).normalized) > 0.7f)
+                    {
+                        return;
+                    }
                 }
-                if(secondActiveOrbPrefab != null)
+                else
                 {
-                    secondActiveOrbPrefab.transform.position = secondActiveOrbPrefabLocation.transform.position;
+                    Vector3 newPos = rb.position + direction * moveDistance;
+                    rb.MovePosition(newPos);
                 }
             }
-            else 
+            else
             {
-                playerState = PlayerState.Idle;
-                return;
+                Vector3 newPos = rb.position + direction * moveDistance;
+                rb.MovePosition(newPos);
+            }
+
+            if (firstActiveOrbPrefab != null)
+            {
+                firstActiveOrbPrefab.transform.position = firstActiveOrbPrefabLocation.transform.position;
+            }
+            if (secondActiveOrbPrefab != null)
+            {
+                secondActiveOrbPrefab.transform.position = secondActiveOrbPrefabLocation.transform.position;
             }
         }
         else
