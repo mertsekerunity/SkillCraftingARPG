@@ -44,8 +44,10 @@ public class SpawnSkillPrefab : MonoBehaviour
                 targetPoint += spawnOffset;
             }
 
-                Vector3 direction = (targetPoint - transform.position).normalized;
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            Vector3 direction = (targetPoint - transform.position).normalized;
+            //Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+            Quaternion targetRotation = playerController.currentSkill.skillPrefab.transform.rotation;
 
             // Instantiate fireball at player's position with the proper rotation
             GameObject currentSkillPrefab = Instantiate(playerController.currentSkill.skillPrefab, targetPoint, targetRotation);

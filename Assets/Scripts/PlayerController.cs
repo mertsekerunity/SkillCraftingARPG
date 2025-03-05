@@ -128,7 +128,7 @@ public class PlayerController : MonoBehaviour
             if (wouldCollide)
             {
                 if (sweepHit.collider.gameObject.layer == LayerMask.NameToLayer("Wall") ||
-                    sweepHit.collider.CompareTag("Obstacle"))
+                    sweepHit.collider.CompareTag("Obstacle") || sweepHit.collider.CompareTag("Enemy"))
                 {
                     float adjustedDistance = Mathf.Max(0, sweepHit.distance - 0.1f);
 
@@ -363,7 +363,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void HandleAttackExecution()  //attack cooldownu yok o yüzden tekrar attack edince bozuyor, onun icin bir mekanizma ekle
+    void HandleAttackExecution()  //attack icin mana olmali mi?
     {
         if (Input.GetMouseButtonDown(1))
         {
