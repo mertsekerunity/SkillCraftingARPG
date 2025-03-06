@@ -127,7 +127,7 @@ public class PlayerController : MonoBehaviour
 
             if (wouldCollide)
             {
-                if (sweepHit.collider.gameObject.layer == LayerMask.NameToLayer("Wall") ||
+                if (sweepHit.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle") ||
                     sweepHit.collider.CompareTag("Obstacle") || sweepHit.collider.CompareTag("Enemy"))
                 {
                     float adjustedDistance = Mathf.Max(0, sweepHit.distance - 0.1f);
@@ -337,7 +337,6 @@ public class PlayerController : MonoBehaviour
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
             RaycastHit hit;
-            //LayerMask layerMask = LayerMask.GetMask("Enemy", "Wall");
 
             if (Physics.Raycast(ray.origin, ray.direction, out hit))
             {

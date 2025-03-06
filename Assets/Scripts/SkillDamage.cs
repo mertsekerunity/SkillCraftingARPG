@@ -43,7 +43,7 @@ public class SkillDamage : MonoBehaviour
             Debug.Log("Enemy is not found");
         }
 
-        if (other.gameObject.layer == LayerMask.NameToLayer("Wall"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
         {
             Destroy(gameObject, destroyDelay);
         }
