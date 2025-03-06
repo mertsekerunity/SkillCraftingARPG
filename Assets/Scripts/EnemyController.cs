@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    [SerializeField] float chaseRange = 10f;
+    [SerializeField] float chaseRange = 60f;
     [SerializeField] float turnSpeed = 5f;
 
     float distanceToTarget = Mathf.Infinity;
@@ -54,7 +54,7 @@ public class EnemyController : MonoBehaviour
 
     void EngageTarget()
     {
-        FaceTarget();
+        //FaceTarget();
 
         if (distanceToTarget >= navMeshAgent.stoppingDistance)
         {
@@ -94,10 +94,10 @@ public class EnemyController : MonoBehaviour
 
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, navMeshAgent.stoppingDistance);
+
         if(navMeshAgent == null)
         {
             Debug.Log("navMeshAgent component couldnt found.");
         }
-
     }
 }
