@@ -2421,6 +2421,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6e9705af4ea1b6b46b43464099d05f14, type: 3}
+--- !u!20 &1377894916 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 1840013100096025348, guid: 777ea22697adea846ba722d76f84b717,
+    type: 3}
+  m_PrefabInstance: {fileID: 7485457341758558750}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1386469618
 GameObject:
   m_ObjectHideFlags: 0
@@ -2586,14 +2592,14 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 2
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 1377894916}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
+  m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0

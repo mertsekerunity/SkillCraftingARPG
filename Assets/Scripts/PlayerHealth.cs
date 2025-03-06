@@ -41,7 +41,7 @@ public class PlayerHealth : MonoBehaviour
     {
         health -= damage;
 
-        Debug.Log($"Remaining HP: {health}");
+        Debug.Log($"Remaining HP: {(int)health}");
 
         animator.SetTrigger("DamageTaken");
 
