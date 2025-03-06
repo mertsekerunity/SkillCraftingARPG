@@ -1,19 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour
 {
     Animator animator;
 
     [SerializeField] float health = 100f;
+    [SerializeField] float maxHealth = 100f;
     [SerializeField] float destroyDelay = 1.5f;
-    public bool IsDead { get; private set; }
+    [SerializeField] Image healthDisplay;
+    public bool IsEnemyDead { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponentInChildren<Animator>();
+    }
+
+    private void Update()
+    {
+        healthDisplay.fillAmount = health / maxHealth;
     }
     public void TakeDamage(float damage)
     {
@@ -31,9 +39,9 @@ public class EnemyHealth : MonoBehaviour
 
     void Death()
     {
-        if (IsDead) return;
+        if (IsEnemyDead) return;
 
-        IsDead = true;
+        IsEnemyDead = true;
 
         animator.SetTrigger("Death");
 

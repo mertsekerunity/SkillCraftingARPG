@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] Transform player;
+    [SerializeField] float damage = 25f;
+    public void OnAttack()
     {
-        
+        if (player == null || player.GetComponent<PlayerHealth>().IsPlayerDead) return;
+
+        player.GetComponent<PlayerHealth>().TakeDamage(damage);
+
+        //show damage impact??
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

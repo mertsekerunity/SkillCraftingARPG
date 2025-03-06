@@ -55,11 +55,14 @@ public class EnemyController : MonoBehaviour
 
     void Update()
     {
-        if (GetComponent<EnemyHealth>() != null && GetComponent<EnemyHealth>().IsDead)
+        if (GetComponent<EnemyHealth>() != null && GetComponent<EnemyHealth>().IsEnemyDead) return; // Don't update if dead
+
+        if (target == null || target.GetComponent<PlayerHealth>().IsPlayerDead) 
         {
-            // Don't update if dead
+            animator.SetBool(isWalkingHash, false);
+            animator.SetBool(isAttackingHash, false);
             return;
-        }
+        } 
 
         distanceToTarget = Vector3.Distance(target.position, transform.position);
 
@@ -145,6 +148,8 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
+            if (target.GetComponent<PlayerHealth>().IsPlayerDead) return;
+
             AttackTarget();
         }
     }

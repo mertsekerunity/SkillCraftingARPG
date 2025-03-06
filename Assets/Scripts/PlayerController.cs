@@ -30,6 +30,9 @@ public class PlayerController : MonoBehaviour
     public float attackDamage = 25f;
     public float attackRange = 20f;
     public float attackProjectileSpeed = 40f;
+    public float attackMaxCooldown = 0.5f;
+    
+    float attackCooldown;
 
     GameObject firstActiveOrbPrefab;
     GameObject secondActiveOrbPrefab;
@@ -71,6 +74,15 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GetComponent<PlayerHealth>().IsPlayerDead)
+        {
+            float destroyDelay = GetComponent<PlayerHealth>().destroyDelay; //need to destroy them at sync
+            Destroy(firstActiveOrbPrefab, destroyDelay);
+            Destroy(secondActiveOrbPrefab, destroyDelay);
+            return;
+        }
+
+
         HandleOrbSelection();
         HandleSkillCrafting();
         HandleSkillExecution();
@@ -326,8 +338,6 @@ public class PlayerController : MonoBehaviour
         if (currentSkill.skillCooldown > 0)
         {
             currentSkill.skillCooldown -= Time.deltaTime;
-
-            
         }
 
         bool isSkillExecutionPressed = SkillButtonsPressed();
@@ -364,7 +374,12 @@ public class PlayerController : MonoBehaviour
 
     void HandleAttackExecution()  //attack icin mana olmali mi?
     {
-        if (Input.GetMouseButtonDown(1))
+        if (attackCooldown > 0)
+        {
+            attackCooldown -= Time.deltaTime;
+        }
+
+        if (Input.GetMouseButtonDown(1) && !(attackCooldown > 0))
         {
             playerState = PlayerState.Attacking;
 
@@ -408,6 +423,8 @@ public class PlayerController : MonoBehaviour
                     attackRb.useGravity = false;
                     attackRb.constraints = RigidbodyConstraints.FreezeRotation;
                     lastAttackingDirection = direction.x;
+
+                    attackCooldown = attackMaxCooldown;
                 }
             }
         }

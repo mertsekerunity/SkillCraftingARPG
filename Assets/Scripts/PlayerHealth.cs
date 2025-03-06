@@ -11,20 +11,54 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] Image healthDisplay;
     [SerializeField] TextMeshProUGUI healthText;
 
+    Animator animator;
+
     public float health;
+    public float destroyDelay = 1.2f;
+
+    public bool IsPlayerDead { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
         health = maxHealth;
+        animator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        health += healthRegen * Time.deltaTime;
+        if (!IsPlayerDead)
+        {
+            health += healthRegen * Time.deltaTime;
+        }
         health = Mathf.Clamp(health, 0, maxHealth);
         healthDisplay.fillAmount = health / maxHealth;
-        healthText.text = $"MP: {(int)health} / {maxHealth}";
+        healthText.text = $"HP: {(int)health} / {maxHealth}";
+    }
+
+    public void TakeDamage(float damage)
+    {
+        health -= damage;
+
+        Debug.Log($"Remaining HP: {health}");
+
+        animator.SetTrigger("DamageTaken");
+
+        if (health <= 0)
+        {
+            Death();
+        }
+    }
+
+    void Death()
+    {
+        if (IsPlayerDead) return;
+
+        IsPlayerDead = true;
+
+        animator.SetTrigger("Death");
+
+        Destroy(gameObject, destroyDelay);
     }
 }
