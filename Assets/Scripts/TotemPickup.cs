@@ -8,7 +8,7 @@ public class TotemPickup : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI totemText;
     [SerializeField] Toggle totemTextToggle;
-    float destroyDelay = 1.2f;
+    [SerializeField] float destroyDelay = 1f;
 
     private void OnTriggerEnter(Collider other)
     {
