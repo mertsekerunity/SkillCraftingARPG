@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 439172}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_UpCoth_J01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 459734}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_DownCoth_I01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +74,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 456330}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_DownCoth_E01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 495392}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_DownCoth_H01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,7 +138,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 455566}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_UpCoth_D01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -170,7 +170,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 469778}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_DownCoth_J01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -202,7 +202,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 469282}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_DownCoth_B01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -235,7 +235,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 419860}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_DownCoth_A01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,7 +267,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 466754}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Be_DownCoth_J01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -298,7 +298,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 445294}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_DownCoth_C01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -330,7 +330,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 447566}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_UpCoth_E01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -362,7 +362,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 499882}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_UpCoth_G01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -394,7 +394,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 407046}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_UpCoth_F01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -427,9 +427,11 @@ GameObject:
   m_Component:
   - component: {fileID: 419428}
   - component: {fileID: 9534626}
-  m_Layer: 0
+  - component: {fileID: 110308118874316999}
+  - component: {fileID: 4869989096355151876}
+  m_Layer: 7
   m_Name: pfb_WaterTotem
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -442,10 +444,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 142658}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7130524, z: 0, w: 0.70111084}
+  m_LocalRotation: {x: 0, y: 0.7130547, z: 0, w: 0.70110846}
   m_LocalPosition: {x: 2.426516, y: 0.000429817, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 419860}
   - {fileID: 464890}
@@ -455,7 +457,7 @@ Transform:
   - {fileID: 406096}
   - {fileID: 494234}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90.968, z: 0}
 --- !u!95 &9534626
 Animator:
   serializedVersion: 5
@@ -477,6 +479,41 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!65 &110308118874316999
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 142658}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.346145, y: 0.64376396, z: 0.349538}
+  m_Center: {x: -0.000029496852, y: 0.31745198, z: 0.000361003}
+--- !u!114 &4869989096355151876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 142658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8af3a46f3aa078048b7c8855c9de78cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totemText: {fileID: 0}
+  totemTextToggle: {fileID: 0}
 --- !u!1 &145768
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,7 +523,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 480254}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_UpCoth_H01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -518,7 +555,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 490292}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_UpCoth_C01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -551,7 +588,7 @@ GameObject:
   m_Component:
   - component: {fileID: 435728}
   - component: {fileID: 13745450}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WaterTotem_A01_Cl02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -647,7 +684,7 @@ GameObject:
   - component: {fileID: 412444}
   - component: {fileID: 3393192}
   - component: {fileID: 2388952}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WaterTotem_A01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -729,7 +766,7 @@ GameObject:
   m_Component:
   - component: {fileID: 406096}
   - component: {fileID: 13777150}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WaterTotem_A01_Water002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -815,7 +852,7 @@ GameObject:
   - component: {fileID: 494234}
   - component: {fileID: 19878062}
   - component: {fileID: 19915794}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Water Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5651,7 +5688,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 434342}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_DownCoth_F01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5683,7 +5720,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 477864}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_DownCoth_G01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5716,7 +5753,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 467298}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_UpCoth_I01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5748,7 +5785,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 402034}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_UpCoth_B01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5782,7 +5819,7 @@ GameObject:
   - component: {fileID: 474774}
   - component: {fileID: 19844852}
   - component: {fileID: 19917664}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Orbs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10616,7 +10653,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 464890}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_UpCoth_A01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10649,7 +10686,7 @@ GameObject:
   m_Component:
   - component: {fileID: 485920}
   - component: {fileID: 13722596}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WaterTotem_A01_Cl01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10743,7 +10780,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 424236}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bn_DownCoth_D01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10775,7 +10812,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 431314}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Be_UpCoth_J01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10808,7 +10845,7 @@ GameObject:
   - component: {fileID: 408854}
   - component: {fileID: 19850666}
   - component: {fileID: 19935248}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

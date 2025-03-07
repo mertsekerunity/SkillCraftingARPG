@@ -10,6 +10,8 @@ public class SpawnSkillPrefab : MonoBehaviour
     private PlayerController playerController;
     [SerializeField] Vector3 spawnOffset = new Vector3(0, 1, 0); // Offset relatively from the player position
 
+    float destroyDelay = 1.1f;
+
     void Start()
     {
         mainCamera = Camera.main;
@@ -52,7 +54,11 @@ public class SpawnSkillPrefab : MonoBehaviour
             // Instantiate fireball at player's position with the proper rotation
             GameObject currentSkillPrefab = Instantiate(playerController.currentSkill.skillPrefab, targetPoint, targetRotation);
 
-            if (enemy == null) return;
+            if (enemy == null)
+            {
+                Destroy(currentSkillPrefab,destroyDelay);
+                return;
+            }
 
             //Cache current skill data
             SkillDamage skillDamageComponent = currentSkillPrefab.GetComponent<SkillDamage>();

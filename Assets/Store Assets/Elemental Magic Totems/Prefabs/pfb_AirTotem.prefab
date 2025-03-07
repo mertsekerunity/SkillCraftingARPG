@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 433046}
   - component: {fileID: 3393652}
   - component: {fileID: 2348444}
+  - component: {fileID: 5490941902106888838}
+  - component: {fileID: 427065243653006553}
   m_Layer: 0
   m_Name: pfb_AirTotem
   m_TagString: Untagged
@@ -26,10 +28,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 105756}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 4.964, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 435182}
   m_Father: {fileID: 0}
@@ -84,6 +86,41 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5490941902106888838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8af3a46f3aa078048b7c8855c9de78cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totemText: {fileID: 0}
+  totemTextToggle: {fileID: 0}
+--- !u!65 &427065243653006553
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105756}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.86106634, y: 0.76280797, z: 0.8395676}
+  m_Center: {x: -0.03622327, y: 0.37697396, z: -0.018201446}
 --- !u!1 &109638
 GameObject:
   m_ObjectHideFlags: 0
