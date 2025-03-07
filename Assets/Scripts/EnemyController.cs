@@ -6,8 +6,8 @@ using UnityEngine.AI;
 public class EnemyController : MonoBehaviour
 {
     [SerializeField] float chaseRange = 60f;
-    [SerializeField] float turnSpeed = 5f;
-    [SerializeField] float avoidanceRadius = 2f;
+    //[SerializeField] float turnSpeed = 5f;
+    //[SerializeField] float avoidanceRadius = 2f;
     [SerializeField] LayerMask obstacleLayer;
     [SerializeField] float minimumVelocityThreshold = 0.05f; // Lower threshold to detect stopping sooner
     [SerializeField] float velocityCheckFrequency = 0.1f; // How often to check velocity (seconds)
