@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Playables;
+using UnityEngine.Rendering.LookDev;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
@@ -37,9 +39,9 @@ public class PlayerController : MonoBehaviour
     GameObject firstActiveOrbPrefab;
     GameObject secondActiveOrbPrefab;
 
-
     [SerializeField] SkillBookSO skillBookSO;
 
+    List<SkillSO> skillsList;
 
     [HideInInspector] public Vector3 direction;
 
@@ -69,6 +71,7 @@ public class PlayerController : MonoBehaviour
         playerMana = GetComponent<PlayerMana>();
         animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        skillsList = skillBookSO.GetSkillsList();
     }
 
     // Update is called once per frame
@@ -82,7 +85,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-
+        HandleSkillCooldowns();
         HandleOrbSelection();
         HandleSkillCrafting();
         HandleSkillExecution();
@@ -331,18 +334,21 @@ public class PlayerController : MonoBehaviour
         return (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.Space));
     }
 
+    void HandleSkillCooldowns()
+    {
+        foreach (SkillSO skill in skillsList)
+        {
+            skill.TickCooldown(Time.deltaTime);
+        }
+    }
+
     void HandleSkillExecution()
     {
         if (currentSkill == null) return;
 
-        if (currentSkill.skillCooldown > 0)
-        {
-            currentSkill.skillCooldown -= Time.deltaTime;
-        }
-
         bool isSkillExecutionPressed = SkillButtonsPressed();
 
-        if (isSkillExecutionPressed && !(currentSkill.skillCooldown > 0) && playerMana.mana >= currentSkill.requiredMana)
+        if (isSkillExecutionPressed && currentSkill.IsReady() && playerMana.mana >= currentSkill.requiredMana)
         {
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
@@ -361,12 +367,12 @@ public class PlayerController : MonoBehaviour
                 currentSkill.skillCooldown = currentSkill.skillMaxCooldown;
             }
         }
-        else if (isSkillExecutionPressed && !(currentSkill.skillCooldown <= 0) && playerMana.mana >= currentSkill.requiredMana)
+        else if (isSkillExecutionPressed && !currentSkill.IsReady() && playerMana.mana >= currentSkill.requiredMana)
         {
             Debug.Log($"Remaining cooldown to use {currentSkill.skillName}: {currentSkill.skillCooldown} secs");
         }
 
-        else if (isSkillExecutionPressed && !(currentSkill.skillCooldown > 0) && playerMana.mana < currentSkill.requiredMana)
+        else if (isSkillExecutionPressed && currentSkill.IsReady() && playerMana.mana < currentSkill.requiredMana)
         {
             Debug.Log("Not enough mana!");
         }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AttackDamage : MonoBehaviour
 {
-    [SerializeField] float destroyDelay = 0.3f;
+    [SerializeField] float destroyDelay = 0.005f;
 
     PlayerController playerController;
 
@@ -28,7 +28,7 @@ public class AttackDamage : MonoBehaviour
             {
                 enemy.TakeDamage(playerController.attackDamage);
                 //PlayHitEffect();
-                Destroy(gameObject, destroyDelay);
+                Destroy(gameObject,destroyDelay);
             }
         }
         else
@@ -38,7 +38,7 @@ public class AttackDamage : MonoBehaviour
 
         if (other.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
         {
-            Destroy(gameObject, destroyDelay);
+            Destroy(gameObject,destroyDelay);
         }
     }
 }

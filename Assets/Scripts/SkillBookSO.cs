@@ -20,4 +20,9 @@ public class SkillBookSO : ScriptableObject
         }
         return null;  // If no matching skill is found
     }
+
+    public List<SkillSO> GetSkillsList()
+    {
+        return skills;
+    }
 }
