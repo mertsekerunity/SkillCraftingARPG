@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ddbf36dca581a44d8182f7d590d05ca, type: 3}
   m_Name: Inferno
   m_EditorClassIdentifier: 
-  skillCooldown: 0.7594219
+  skillCooldown: -0.007248061
   skillName: Inferno
   skillIcon: {fileID: 21300000, guid: dd3885098198d104888439be4c590aba, type: 3}
-  skillDamage: 20
+  skillDamage: 50
   skillRange: 1000
-  skillMaxCooldown: 5
-  requiredMana: 30
+  skillMaxCooldown: 7
+  requiredMana: 35
   skillPrefab: {fileID: 7087256911812164595, guid: 267232bdbd6b93642b672e7941d1e03d,
     type: 3}
   _requiredOrbsList: 0000000000000000

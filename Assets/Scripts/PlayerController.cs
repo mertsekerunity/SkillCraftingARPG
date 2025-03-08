@@ -381,8 +381,6 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1) && !(attackCooldown > 0))
         {
-            playerState = PlayerState.Attacking;
-
             Vector3 mousePos = Input.mousePosition;
             Ray ray = mainCam.ScreenPointToRay(mousePos);
             RaycastHit hit;
@@ -418,6 +416,8 @@ public class PlayerController : MonoBehaviour
 
                 if(attack != null)
                 {
+                    playerState = PlayerState.Attacking;
+
                     direction.y = 0;
                     attackRb.velocity = direction * attackProjectileSpeed;
                     attackRb.useGravity = false;
