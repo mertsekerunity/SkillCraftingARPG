@@ -247,7 +247,7 @@ PrefabInstance:
     - target: {fileID: 3476499947573637210, guid: d2670d0ea7d6e7f4cb7e6be1a5541d46,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 3476499947573637210, guid: d2670d0ea7d6e7f4cb7e6be1a5541d46,
         type: 3}
@@ -1028,7 +1028,7 @@ PrefabInstance:
     - target: {fileID: 787857542793174517, guid: 1211a8a70ccbf8941b4f049e54df814a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2
+      value: -3.5
       objectReference: {fileID: 0}
     - target: {fileID: 787857542793174517, guid: 1211a8a70ccbf8941b4f049e54df814a,
         type: 3}
@@ -1687,7 +1687,7 @@ PrefabInstance:
     - target: {fileID: 3476499947573637210, guid: d2670d0ea7d6e7f4cb7e6be1a5541d46,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2
+      value: -3.5
       objectReference: {fileID: 0}
     - target: {fileID: 3476499947573637210, guid: d2670d0ea7d6e7f4cb7e6be1a5541d46,
         type: 3}
@@ -3151,7 +3151,7 @@ PrefabInstance:
     - target: {fileID: 3476499947573637210, guid: d2670d0ea7d6e7f4cb7e6be1a5541d46,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 3476499947573637210, guid: d2670d0ea7d6e7f4cb7e6be1a5541d46,
         type: 3}
@@ -3281,7 +3281,7 @@ PrefabInstance:
     - target: {fileID: 787857542793174517, guid: 1211a8a70ccbf8941b4f049e54df814a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 787857542793174517, guid: 1211a8a70ccbf8941b4f049e54df814a,
         type: 3}
@@ -12214,7 +12214,7 @@ PrefabInstance:
     - target: {fileID: 3476499947573637210, guid: d2670d0ea7d6e7f4cb7e6be1a5541d46,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2
+      value: -3.5
       objectReference: {fileID: 0}
     - target: {fileID: 3476499947573637210, guid: d2670d0ea7d6e7f4cb7e6be1a5541d46,
         type: 3}
@@ -12436,10 +12436,10 @@ MonoBehaviour:
     type: 3}
   firstActiveOrbPrefabLocation: {fileID: 732849246}
   secondActiveOrbPrefabLocation: {fileID: 1461108853}
-  attackDamage: 15
+  attackDamage: 20
   attackRange: 400
-  attackProjectileSpeed: 75
-  attackMaxCooldown: 1.5
+  attackProjectileSpeed: 120
+  attackMaxCooldown: 0.9
   skillBookSO: {fileID: 11400000, guid: e6bcec52f24639847ba61e162dc98834, type: 2}
   direction: {x: 0, y: 0, z: 0}
   currentSkill: {fileID: 0}
@@ -12531,7 +12531,7 @@ PrefabInstance:
     - target: {fileID: 787857542793174517, guid: 1211a8a70ccbf8941b4f049e54df814a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2
+      value: -3.5
       objectReference: {fileID: 0}
     - target: {fileID: 787857542793174517, guid: 1211a8a70ccbf8941b4f049e54df814a,
         type: 3}
@@ -16182,6 +16182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemiesText: {fileID: 417204426}
+  enemyCount: 0
 --- !u!1 &1267359441 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 118458008299423567, guid: 1211a8a70ccbf8941b4f049e54df814a,
@@ -23011,7 +23012,7 @@ PrefabInstance:
     - target: {fileID: 787857542793174517, guid: 1211a8a70ccbf8941b4f049e54df814a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 787857542793174517, guid: 1211a8a70ccbf8941b4f049e54df814a,
         type: 3}
@@ -26704,6 +26705,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1273181383350123822, guid: 51869a17527c37144af290444ea5d956,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1994974796249034814, guid: 51869a17527c37144af290444ea5d956,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -26749,6 +26755,67 @@ PrefabInstance:
       propertyPath: pauseCanvas
       value: 
       objectReference: {fileID: 1760603274}
+    - target: {fileID: 5400052964201980789, guid: 51869a17527c37144af290444ea5d956,
+        type: 3}
+      propertyPath: m_text
+      value: 'Controls
+
+        Q: Select Fire Orb
+
+        W: Select Ice Orb
+
+        R:
+        Craft Skill
+
+        D: Use Active Skill
+
+        Left Mouse Button: Walk
+
+        Right
+        Mouse Button: Attack
+
+        Esc: Pause
+
+        Tab: Display Active Quests
+
+
+        Skill
+        Combinations
+
+        Q-Q: Inferno
+
+        W-W: Tornado
+
+        Q-W: Lightning
+        Bolt
+
+
+        Attack Combinations
+
+        Orbs must be chosen!
+
+        Q-Q:
+        Fire Attack
+
+        W-W: Ice Attack
+
+        Q-W: Lightning Attack'
+      objectReference: {fileID: 0}
+    - target: {fileID: 5400052964201980789, guid: 51869a17527c37144af290444ea5d956,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 5400052964201980789, guid: 51869a17527c37144af290444ea5d956,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 5400052964201980789, guid: 51869a17527c37144af290444ea5d956,
+        type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6308253200226306613, guid: 51869a17527c37144af290444ea5d956,
         type: 3}
       propertyPath: m_AnchorMax.y

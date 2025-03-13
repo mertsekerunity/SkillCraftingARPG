@@ -29,10 +29,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject firstActiveOrbPrefabLocation;
     [SerializeField] GameObject secondActiveOrbPrefabLocation;
 
-    public float attackDamage = 25f;
-    public float attackRange = 20f;
-    public float attackProjectileSpeed = 40f;
-    public float attackMaxCooldown = 0.5f;
+    public float attackDamage = 15f; //duzelt!!
+    public float attackRange = 400f;
+    public float attackProjectileSpeed = 75f;
+    public float attackMaxCooldown = 0.8f;
     
     float attackCooldown;
 

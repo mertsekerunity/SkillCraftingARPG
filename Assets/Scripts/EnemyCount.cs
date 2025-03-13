@@ -9,7 +9,7 @@ public class EnemyCount : MonoBehaviour
     [SerializeField] TextMeshProUGUI enemiesText;
     EnemyHealth[] enemies;
     int maxEnemyCount;
-    int enemyCount;
+    public int enemyCount;
 
     // Start is called before the first frame update
     void Start()

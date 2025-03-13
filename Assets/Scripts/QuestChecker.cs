@@ -23,11 +23,9 @@ public class QuestChecker : MonoBehaviour
 
     void HandleQuests()
     {
-        foreach(TextMeshProUGUI text in texts)
+        if(FindObjectOfType<EnemyCount>().enemyCount == 0 && FindObjectOfType<TotemPickup>() == null)
         {
-            if (text.color != Color.green) return;
+            levelManager.LoadGameFinished();
         }
-
-        levelManager.LoadGameFinished();
     }
 }
