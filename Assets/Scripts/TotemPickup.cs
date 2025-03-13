@@ -17,7 +17,7 @@ public class TotemPickup : MonoBehaviour
             totemText.color = Color.green;
             totemTextToggle.isOn = true;
             Destroy(gameObject, destroyDelay);
-            Debug.Log("Totem collected.");
+            //Debug.Log("Totem collected.");
         }
         else return;
     }

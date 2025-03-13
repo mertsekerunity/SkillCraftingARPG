@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Playables;
@@ -16,6 +15,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] SkillSO craftSkill;
     [SerializeField] UnityEngine.UI.Image activeSkillIcon;
     [SerializeField] UnityEngine.UI.Image timerImage;
+    [SerializeField] TextMeshProUGUI timerText;
 
     [SerializeField] UnityEngine.UI.Image firstActiveOrb;
     [SerializeField] UnityEngine.UI.Image secondActiveOrb;
@@ -38,6 +38,8 @@ public class PlayerController : MonoBehaviour
 
     GameObject firstActiveOrbPrefab;
     GameObject secondActiveOrbPrefab;
+
+    LevelManager levelManager;
 
     [SerializeField] SkillBookSO skillBookSO;
 
@@ -71,6 +73,7 @@ public class PlayerController : MonoBehaviour
         playerMana = GetComponent<PlayerMana>();
         animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        levelManager = FindObjectOfType<LevelManager>();
         skillsList = skillBookSO.GetSkillsList();
     }
 
@@ -85,6 +88,8 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        if (FindObjectOfType<Pause>().isPaused) return;
+
         HandleSkillCooldowns();
         HandleOrbSelection();
         HandleSkillCrafting();
@@ -95,16 +100,26 @@ public class PlayerController : MonoBehaviour
         if(currentSkill != null)
         {
             timerImage.fillAmount = currentSkill.skillCooldown / currentSkill.skillMaxCooldown;
+            if(currentSkill.skillCooldown > 1)
+            {
+                timerText.text = ((int)currentSkill.skillCooldown).ToString();
+            }
+            else
+            {
+                timerText.text = "";
+            }
+            
         }
         else
         {
             timerImage.fillAmount = 0;
+            timerText.text = "";
         }
 
         if (playerState != previousState)
         {
             previousState = playerState;
-            Debug.Log($"player state changed to: {playerState}");
+            //Debug.Log($"player state changed to: {playerState}");
         }
         
     }
@@ -283,7 +298,7 @@ public class PlayerController : MonoBehaviour
 
         activeOrbs.Add(orb);
 
-        Debug.Log($"Current orbs: {string.Join(", ", activeOrbs)}");
+        //Debug.Log($"Current orbs: {string.Join(", ", activeOrbs)}");
     }
 
     void HandleSkillCrafting()
@@ -304,13 +319,13 @@ public class PlayerController : MonoBehaviour
         {
             HashSet<Orb> orbSet = new HashSet<Orb>(activeOrbs);
 
-            Debug.Log(string.Join(", ", orbSet));
+            //Debug.Log(string.Join(", ", orbSet));
 
             currentSkill = skillBookSO.GetSkill(orbSet); 
 
             if(currentSkill != null)
             {
-                Debug.Log($"Crafted Skill: {currentSkill.skillName}");
+                //Debug.Log($"Crafted Skill: {currentSkill.skillName}");
 
                 craftSkill.skillCooldown = craftSkill.skillMaxCooldown;
 
@@ -359,22 +374,22 @@ public class PlayerController : MonoBehaviour
 
                 playerState = PlayerState.UsingSkill;
 
-                Debug.Log($"{currentSkill.skillName} is used.");
+                //Debug.Log($"{currentSkill.skillName} is used.");
 
                 playerMana.ModifyMana(currentSkill);
-                Debug.Log($" {playerMana.mana} MP left.");
+                //Debug.Log($" {playerMana.mana} MP left.");
 
                 currentSkill.skillCooldown = currentSkill.skillMaxCooldown;
             }
         }
         else if (isSkillExecutionPressed && !currentSkill.IsReady() && playerMana.mana >= currentSkill.requiredMana)
         {
-            Debug.Log($"Remaining cooldown to use {currentSkill.skillName}: {currentSkill.skillCooldown} secs");
+            //Debug.Log($"Remaining cooldown to use {currentSkill.skillName}: {currentSkill.skillCooldown} secs");
         }
 
         else if (isSkillExecutionPressed && currentSkill.IsReady() && playerMana.mana < currentSkill.requiredMana)
         {
-            Debug.Log("Not enough mana!");
+            //Debug.Log("Not enough mana!");
         }
     }
 

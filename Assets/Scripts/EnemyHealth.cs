@@ -27,7 +27,7 @@ public class EnemyHealth : MonoBehaviour
     {
         health -= damage;
 
-        Debug.Log($"Remaining HP: {(int)health}");
+        //Debug.Log($"Remaining HP: {(int)health}");
 
         animator.SetTrigger("DamageTaken");
 
@@ -46,7 +46,5 @@ public class EnemyHealth : MonoBehaviour
         animator.SetTrigger("Death");
 
         Destroy(gameObject, destroyDelay);
-
-        //handle death animation and other stuff
     }
 }

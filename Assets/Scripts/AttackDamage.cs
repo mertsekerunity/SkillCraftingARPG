@@ -31,10 +31,10 @@ public class AttackDamage : MonoBehaviour
                 Destroy(gameObject,destroyDelay);
             }
         }
-        else
-        {
-            Debug.Log("Enemy is not found");
-        }
+        //else
+        //{
+        //    Debug.Log("Enemy is not found");
+        //}
 
         if (other.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
         {

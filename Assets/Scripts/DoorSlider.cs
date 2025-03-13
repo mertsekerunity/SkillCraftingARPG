@@ -25,7 +25,7 @@ public class DoorSlider : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             isTriggeredOn = true;
-            Debug.Log("Door triggered.");
+            //Debug.Log("Door triggered.");
 
         }
     }

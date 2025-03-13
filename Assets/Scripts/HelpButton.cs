@@ -26,12 +26,9 @@ public class HelpButton : MonoBehaviour
 
     void HotkeysForHelp()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && helpText.isActiveAndEnabled)
         {
-            if (helpText.isActiveAndEnabled)
-            {
-                helpText.gameObject.SetActive(false);
-            }
+            helpText.gameObject.SetActive(false);
         }
 
         if (Input.GetKeyDown(KeyCode.H))

@@ -12,6 +12,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] TextMeshProUGUI healthText;
 
     Animator animator;
+    LevelManager levelManager;
 
     public float health;
     public float destroyDelay = 1.2f;
@@ -23,6 +24,7 @@ public class PlayerHealth : MonoBehaviour
     {
         health = maxHealth;
         animator = GetComponentInChildren<Animator>();
+        levelManager = FindObjectOfType<LevelManager>();
     }
 
     // Update is called once per frame
@@ -41,7 +43,7 @@ public class PlayerHealth : MonoBehaviour
     {
         health -= damage;
 
-        Debug.Log($"Remaining HP: {(int)health}");
+        //Debug.Log($"Remaining HP: {(int)health}");
 
         animator.SetTrigger("DamageTaken");
 
@@ -60,5 +62,7 @@ public class PlayerHealth : MonoBehaviour
         animator.SetTrigger("Death");
 
         Destroy(gameObject, destroyDelay);
+
+        levelManager.LoadGameOver();
     }
 }
