@@ -5,7 +5,21 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
+    public static LevelManager Instance { get; private set; }
+
     [SerializeField] float sceneLoadDelay = 1.5f;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);  // Prevent duplicate instances
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);  // Keep this object across scenes
+    }
 
     public void LoadGame()
     {
@@ -15,6 +29,11 @@ public class LevelManager : MonoBehaviour
     public void LoadMainMenu()
     {
         SceneManager.LoadScene("Main Menu");
+    }
+
+    public void LoadDifficultySelection()
+    {
+        SceneManager.LoadScene("Difficulty Selection");
     }
 
     public void LoadGameOver()

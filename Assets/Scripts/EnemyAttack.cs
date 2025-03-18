@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyAttack : MonoBehaviour
 {
     [SerializeField] Transform player;
-    [SerializeField] float damage = 25f;
+    public float damage;
     public void OnAttack()
     {
         if (player == null || player.GetComponent<PlayerHealth>().IsPlayerDead) return;

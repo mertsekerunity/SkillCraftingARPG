@@ -5,12 +5,13 @@ using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    [SerializeField] float chaseRange = 60f;
     //[SerializeField] float turnSpeed = 5f;
     //[SerializeField] float avoidanceRadius = 2f;
     [SerializeField] LayerMask obstacleLayer;
     [SerializeField] float minimumVelocityThreshold = 0.05f; // Lower threshold to detect stopping sooner
     [SerializeField] float velocityCheckFrequency = 0.1f; // How often to check velocity (seconds)
+
+    public float chaseRange = 60f;
 
     float distanceToTarget = Mathf.Infinity;
     bool isProvoked = false;
@@ -84,6 +85,12 @@ public class EnemyController : MonoBehaviour
             }
         }
 
+        // Handle pursuit behavior
+        if (isProvoked)
+        {
+            EngageTarget();
+        }
+
         // Outside chase range - stop and go idle
         if (distanceToTarget > chaseRange)
         {
@@ -98,15 +105,9 @@ public class EnemyController : MonoBehaviour
         {
             isProvoked = true;
         }
-
-        // Handle pursuit behavior
-        if (isProvoked)
-        {
-            EngageTarget();
-        }
     }
 
-    void StopChasing()
+    void StopChasing() //sorun bundan kaynakli olabilir, zombie implementationda bu yok !!!
     {
         // Force stop immediately
         navMeshAgent.isStopped = true;
@@ -146,7 +147,7 @@ public class EnemyController : MonoBehaviour
         {
             ChaseTarget();
         }
-        else
+        if (distanceToTarget <= navMeshAgent.stoppingDistance)
         {
             if (target.GetComponent<PlayerHealth>().IsPlayerDead) return;
 
@@ -204,8 +205,14 @@ public class EnemyController : MonoBehaviour
     public void DamageTaken()
     {
         // Trigger damage animation
-        animator.SetTrigger(damageTakenHash);
+        //animator.SetTrigger(damageTakenHash);
         isProvoked = true;
+    }
+
+    public void TriggerMassProvoke()
+    {
+        BroadcastMessage("DamageTaken");
+        Debug.Log("All enemies should attack the player!");
     }
 
     private void OnDrawGizmosSelected()
