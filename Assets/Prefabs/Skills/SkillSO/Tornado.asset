@@ -21,4 +21,6 @@ MonoBehaviour:
   requiredMana: 20
   skillPrefab: {fileID: 6391596131165205141, guid: aed73b251d92d004f8566fa0360d593b,
     type: 3}
+  isProjectile: 0
+  projectileSpeed: 50
   _requiredOrbsList: 0100000001000000

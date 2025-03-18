@@ -57,13 +57,13 @@ public class PlayerController : MonoBehaviour
     PlayerState playerState = PlayerState.Idle;
     PlayerState previousState = PlayerState.Idle;
 
-    List<Orb> activeOrbs = new List<Orb>();
+    public List<Orb> activeOrbs = new List<Orb>();
 
     float lastWalkingDirection;
     float lastAttackingDirection;
     float lastUsingSkillDirection;
 
-    int maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length;
+    public int maxOrbsCount = System.Enum.GetValues(typeof(Orb)).Length;
 
     // Start is called before the first frame update
     void Start()
@@ -400,54 +400,12 @@ public class PlayerController : MonoBehaviour
             attackCooldown -= Time.deltaTime;
         }
 
+        if (activeOrbs.Count != maxOrbsCount) return;
+
         if (Input.GetMouseButtonDown(1) && !(attackCooldown > 0))
         {
-            Vector3 mousePos = Input.mousePosition;
-            Ray ray = mainCam.ScreenPointToRay(mousePos);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit))
-            {
-                Vector3 targetPoint = hit.point;
-                Vector3 direction = (targetPoint - transform.position).normalized;
-                Quaternion targetRotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180, 0);
-
-                if (activeOrbs.Count != maxOrbsCount) return;
-
-                ParticleSystem ps = attackPrefab.GetComponentInChildren<ParticleSystem>();
-                var main = ps.main;
-                main.startColor = Color.clear;
-
-                if(activeOrbs.Contains(Orb.Quas) && activeOrbs.Contains(Orb.Wex))
-                {
-                    main.startColor = Color.magenta;
-                }
-                else if (activeOrbs.Contains(Orb.Quas) && !activeOrbs.Contains(Orb.Wex)) 
-                {
-                    main.startColor = (Color.red + Color.yellow)/2;
-                }
-                else if (activeOrbs.Contains(Orb.Wex) && !activeOrbs.Contains(Orb.Quas))
-                {
-                    main.startColor = Color.cyan;
-                }
-
-                GameObject attack = Instantiate(attackPrefab, transform.position, targetRotation);
-
-                Rigidbody attackRb = attack.GetComponent<Rigidbody>();
-
-                if(attack != null)
-                {
-                    playerState = PlayerState.Attacking;
-
-                    direction.y = 0;
-                    attackRb.velocity = direction * attackProjectileSpeed;
-                    attackRb.useGravity = false;
-                    attackRb.constraints = RigidbodyConstraints.FreezeRotation;
-                    lastAttackingDirection = direction.x;
-
-                    attackCooldown = attackMaxCooldown;
-                }
-            }
+            playerState = PlayerState.Attacking;
+            attackCooldown = attackMaxCooldown;
         }
     }
 

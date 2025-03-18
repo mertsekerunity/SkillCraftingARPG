@@ -12,6 +12,8 @@ public class SkillSO : ScriptableObject
     public float skillMaxCooldown;
     public float requiredMana;
     public GameObject skillPrefab;
+    public bool isProjectile;
+    public float projectileSpeed;
 
     public bool IsReady()
     {
