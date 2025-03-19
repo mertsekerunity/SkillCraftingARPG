@@ -15,6 +15,7 @@ public class EnemyController : MonoBehaviour
 
     float distanceToTarget = Mathf.Infinity;
     bool isProvoked = false;
+    bool isMassProvoked = false;
     float currentVelocity = 0f;
     bool wasMoving = false;
     float lastVelocityCheckTime = 0f;
@@ -58,52 +59,59 @@ public class EnemyController : MonoBehaviour
     {
         if (GetComponent<EnemyHealth>() != null && GetComponent<EnemyHealth>().IsEnemyDead) return; // Don't update if dead
 
-        if (target == null || target.GetComponent<PlayerHealth>().IsPlayerDead) 
+        if (target == null || target.GetComponent<PlayerHealth>().IsPlayerDead)
         {
             animator.SetBool(isWalkingHash, false);
             animator.SetBool(isAttackingHash, false);
             return;
-        } 
-
-        distanceToTarget = Vector3.Distance(target.position, transform.position);
-
-        // More frequent velocity checking for immediate animation response
-        if (Time.time > lastVelocityCheckTime + velocityCheckFrequency)
-        {
-            // Calculate actual velocity for animation transitions
-            currentVelocity = navMeshAgent.velocity.magnitude;
-            lastVelocityCheckTime = Time.time;
-
-            // Check if movement state has changed
-            bool isMovingNow = currentVelocity > minimumVelocityThreshold;
-
-            // If movement state changed, update animation immediately
-            if (wasMoving != isMovingNow)
-            {
-                wasMoving = isMovingNow;
-                animator.SetBool(isWalkingHash, isMovingNow && !animator.GetBool(isAttackingHash));
-            }
         }
 
-        // Handle pursuit behavior
-        if (isProvoked)
+        if (isMassProvoked)
         {
             EngageTarget();
         }
-
-        // Outside chase range - stop and go idle
-        if (distanceToTarget > chaseRange)
+        else
         {
+            distanceToTarget = Vector3.Distance(target.position, transform.position);
+
+            // More frequent velocity checking for immediate animation response
+            if (Time.time > lastVelocityCheckTime + velocityCheckFrequency)
+            {
+                // Calculate actual velocity for animation transitions
+                currentVelocity = navMeshAgent.velocity.magnitude;
+                lastVelocityCheckTime = Time.time;
+
+                // Check if movement state has changed
+                bool isMovingNow = currentVelocity > minimumVelocityThreshold;
+
+                // If movement state changed, update animation immediately
+                if (wasMoving != isMovingNow)
+                {
+                    wasMoving = isMovingNow;
+                    animator.SetBool(isWalkingHash, isMovingNow && !animator.GetBool(isAttackingHash));
+                }
+            }
+
+            // Handle pursuit behavior
             if (isProvoked)
             {
-                isProvoked = false;
-                StopChasing();
+                EngageTarget();
             }
-        }
-        // Inside chase range - start pursuing
-        else if (!isProvoked)
-        {
-            isProvoked = true;
+
+            // Outside chase range - stop and go idle
+            if (distanceToTarget > chaseRange)
+            {
+                if (isProvoked)
+                {
+                    isProvoked = false;
+                    StopChasing();
+                }
+            }
+            // Inside chase range - start pursuing
+            else if (!isProvoked)
+            {
+                isProvoked = true;
+            }
         }
     }
 
@@ -211,8 +219,9 @@ public class EnemyController : MonoBehaviour
 
     public void TriggerMassProvoke()
     {
+        isMassProvoked = true;
         BroadcastMessage("DamageTaken");
-        Debug.Log("All enemies should attack the player!");
+        Debug.Log("All enemies should chase the player!");
     }
 
     private void OnDrawGizmosSelected()

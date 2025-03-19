@@ -35,8 +35,8 @@ public class EnemyHealth : MonoBehaviour
         
         if(DifficultyManager.Instance.currentDifficulty == "Hard")
         {
-            //FindObjectOfType<EnemyController>().TriggerMassProvoke();
-            BroadcastMessage("DamageTaken");
+            FindObjectOfType<EnemyController>().TriggerMassProvoke();
+            //BroadcastMessage("DamageTaken");
         }
 
         //Debug.Log($"Remaining HP: {(int)health}");
